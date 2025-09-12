@@ -1,9 +1,11 @@
 using System.Diagnostics;
 using HumanResources.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
 
-namespace HumanResources.Controllers
-{
+namespace HumanResources.Controllers{
+
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;

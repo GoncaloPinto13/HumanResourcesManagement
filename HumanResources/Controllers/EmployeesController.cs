@@ -12,9 +12,9 @@ namespace HumanResources.Controllers
 {
     public class EmployeesController : Controller
     {
-        private readonly Context _context;
+        private readonly HumanResourcesContext _context;
 
-        public EmployeesController(Context context)
+        public EmployeesController(HumanResourcesContext context)
         {
             _context = context;
         }

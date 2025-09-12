@@ -12,9 +12,9 @@ namespace HumanResources.Controllers
 {
     public class ProjectsController : Controller
     {
-        private readonly Context _context;
+        private readonly HumanResourcesContext _context;
 
-        public ProjectsController(Context context)
+        public ProjectsController(HumanResourcesContext context)
         {
             _context = context;
         }
@@ -22,8 +22,8 @@ namespace HumanResources.Controllers
         // GET: Projects
         public async Task<IActionResult> Index()
         {
-            var context = _context.Projects.Include(p => p.Client);
-            return View(await context.ToListAsync());
+            var humanResourcesContext = _context.Projects.Include(p => p.Client);
+            return View(await humanResourcesContext.ToListAsync());
         }
 
         // GET: Projects/Details/5

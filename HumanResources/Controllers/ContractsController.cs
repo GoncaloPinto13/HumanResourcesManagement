@@ -12,9 +12,9 @@ namespace HumanResources.Controllers
 {
     public class ContractsController : Controller
     {
-        private readonly Context _context;
+        private readonly HumanResourcesContext _context;
 
-        public ContractsController(Context context)
+        public ContractsController(HumanResourcesContext context)
         {
             _context = context;
         }
@@ -22,8 +22,8 @@ namespace HumanResources.Controllers
         // GET: Contracts
         public async Task<IActionResult> Index()
         {
-            var context = _context.Contracts.Include(c => c.Client).Include(c => c.Project);
-            return View(await context.ToListAsync());
+            var humanResourcesContext = _context.Contracts.Include(c => c.Client).Include(c => c.Project);
+            return View(await humanResourcesContext.ToListAsync());
         }
 
         // GET: Contracts/Details/5
