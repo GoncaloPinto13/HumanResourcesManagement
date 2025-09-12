@@ -7,7 +7,6 @@ namespace HumanResources.Data
     {
         public Context (DbContextOptions<Context> options) : base(options)
         {
-
         }
         public DbSet<Client> Clients { get; set; }
         public DbSet<Employee> Employees { get; set; }
@@ -39,7 +38,17 @@ namespace HumanResources.Data
                 .HasMany(p => p.Employees)
                 .WithMany(e => e.Projects)
                 .UsingEntity(j => j.ToTable("ProjectEmployees"));
-        }
 
+            modelBuilder.Entity<Client>(e =>
+            {
+                e.Property(p => p.CompanyName).HasMaxLength(150).IsRequired();
+                e.Property(p => p.Nif).HasMaxLength(9).IsRequired();
+                e.Property(p => p.Email).HasMaxLength(150);
+
+                e.HasIndex(p => p.Nif).IsUnique(); // NIF único
+                e.HasIndex(p => p.Email);          // índice normal
+            });
+
+        }
     }
 }
