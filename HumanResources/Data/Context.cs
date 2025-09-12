@@ -28,11 +28,11 @@ namespace HumanResources.Data
 
             // --- Configuração explícita das relações (Boas práticas) ---
 
-            // Configura a relação 1-para-1 entre Project e Contract
-            modelBuilder.Entity<Project>()
-                .HasOne(p => p.Contract)
-                .WithOne(c => c.Project)
-                .HasForeignKey<Contract>(c => c.ProjectId);
+            // Configura a relação 1-N entre Project e Contract
+            modelBuilder.Entity<Contract>()
+                .HasOne(c => c.Project)
+                .WithMany(p => p.Contracts)
+                .HasForeignKey(c => c.ProjectId);
 
             // Configura a relação N-N entre Project e Employee, especificando a tabela de junção
             modelBuilder.Entity<Project>()
