@@ -38,5 +38,18 @@ namespace HumanResources.Models
         [Required]
         public int ProjectId { get; set; }
         public Project Project { get; set; }
+
+        // Relação N-N (Muitos-para-Muitos) direta com Funcionários
+        public ICollection<EmployeeContract> EmployeeContracts { get; set; } = new List<EmployeeContract>();
+
+        // Propriedade calculada para a duração do contrato em dias
+        [NotMapped]
+        public int DurationInDays => (int)(ExpirationDate - StartDate).TotalDays;
+
+        // Método auxiliar para verificar se o contrato está ativo
+        public bool IsActive()
+        {
+            return ExpirationDate >= DateTime.Now;
+        }
     }
 }

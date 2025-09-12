@@ -1,14 +1,15 @@
 ﻿@model IEnumerable<HumanResources.Models.Employee>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Funcionários";
 }
 
-<h1>Index</h1>
+<h1>Lista de Funcionários</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create">Creat New</a>
 </p>
+
 <table class="table">
     <thead>
         <tr>
@@ -21,27 +22,319 @@
             <th>
                 @Html.DisplayNameFor(model => model.SpecializationArea)
             </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TotalContracts)
+            </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Position)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.SpecializationArea)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Position)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.SpecializationArea)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TotalContracts)
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>
+
+
+
+@* @model IEnumerable<HumanResources.Models.Employee>
+
+@{
+    ViewData["Title"] = "Funcionários";
+}
+
+<div class="row">
+    <div class="col-md-8">
+        <h1>Gestão de Funcionários</h1>
+    </div>
+    <div class="col-md-4 text-end">
+        <a asp-action="Create" class="btn btn-success">
+            Novo Funcionário
+        </a>
+        <a asp-action="Reports" class="btn btn-info">
+            Relatórios
+        </a>
+    </div>
+</div>
+
+<!-- Filtros de Pesquisa -->
+<div class="card mb-4">
+    <div class="card-header">
+        <h5>Pesquisar e Filtrar</h5>
+    </div>
+    <div class="card-body">
+        <form method="get" class="row g-3">
+            <div class="col-md-4">
+                <label for="searchString" class="form-label">Nome ou Posição</label>
+                <input type="text" class="form-control" name="searchString"
+                       value="@ViewData["CurrentFilter"]" placeholder="Pesquisar...">
+            </div>
+            <div class="col-md-4">
+                <label for="specializationFilter" class="form-label">Área de Especialização</label>
+                <input type="text" class="form-control" name="specializationFilter"
+                       value="@ViewData["SpecializationFilter"]" placeholder="Ex: .NET, Frontend...">
+            </div>
+            <div class="col-md-4 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary me-2">
+                    Pesquisar
+                </button>
+                <a asp-action="Index" class="btn btn-outline-secondary">
+                    Limpar
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Mensagens de Feedback -->
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<!-- Estatísticas Rápidas -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card bg-primary text-white">
+            <div class="card-body text-center">
+                <h3>@Model.Count()</h3>
+                <p>Total Funcionários</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-success text-white">
+            <div class="card-body text-center">
+                <h3>@Model.Count(e => e.Projects.Any())</h3>
+                <p>Com Projetos</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-warning text-white">
+            <div class="card-body text-center">
+                <h3>@Model.Count(e => !e.Projects.Any())</h3>
+                <p>Disponíveis</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-info text-white">
+            <div class="card-body text-center">
+                <h3>@Model.Select(e => e.SpecializationArea).Where(s => !string.IsNullOrEmpty(s)).Distinct().Count()</h3>
+                <p>Especializações</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Tabela de Funcionários -->
+<div class="card">
+    <div class="card-header">
+        <h5>Lista de Funcionários</h5>
+    </div>
+    <div class="card-body">
+        @if (Model.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>
+                                <a asp-action="Index" asp-route-sortOrder="@ViewData["NameSortParm"]"
+                                   asp-route-searchString="@ViewData["CurrentFilter"]"
+                                   asp-route-specializationFilter="@ViewData["SpecializationFilter"]">
+                                    Nome
+                                </a>
+                            </th>
+                            <th>
+                                <a asp-action="Index" asp-route-sortOrder="@ViewData["PositionSortParm"]"
+                                   asp-route-searchString="@ViewData["CurrentFilter"]"
+                                   asp-route-specializationFilter="@ViewData["SpecializationFilter"]">
+                                    Posição
+                                </a>
+                            </th>
+                            <th>Especialização</th>
+                            <th class="text-center">Projetos</th>
+                            <th class="text-center">Status</th>
+                            <th class="text-center">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <strong>@item.Name</strong>
+                                </td>
+                                <td>
+                                    <span class="badge bg-secondary">@item.Position</span>
+                                </td>
+                                <td>
+                                    <small class="text-muted">
+                                        @(string.IsNullOrEmpty(item.SpecializationArea) ? "Não especificado" : item.SpecializationArea)
+                                    </small>
+                                </td>
+                                <td class="text-center">
+                                    @if (item.Projects.Any())
+                                    {
+                                        <span class="badge bg-success">@item.Projects.Count</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-light text-dark">0</span>
+                                    }
+                                </td>
+                                <td class="text-center">
+                                    @if (item.Projects.Any(p => p.DueDate >= DateTime.Now))
+                                    {
+                                        <span class="badge bg-success">Ativo</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">Disponível</span>
+                                    }
+                                </td>
+                                <td class="text-center">
+                                    <div class="btn-group" role="group">
+                                        <a asp-action="Details" asp-route-id="@item.Id"
+                                           class="btn btn-sm btn-outline-info">
+                                            Detalhes
+                                        </a>
+                                        <a asp-action="Edit" asp-route-id="@item.Id"
+                                           class="btn btn-sm btn-outline-warning">
+                                            Editar
+                                        </a>
+                                        <a asp-action="ManageProjects" asp-route-id="@item.Id"
+                                           class="btn btn-sm btn-outline-primary">
+                                            Projetos
+                                        </a>
+                                        <a asp-action="Delete" asp-route-id="@item.Id"
+                                           class="btn btn-sm btn-outline-danger"
+                                           onclick="return confirm('Tem certeza que deseja eliminar este funcionário?')">
+                                            Eliminar
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="text-center py-4">
+                <h5 class="text-muted">Nenhum funcionário encontrado</h5>
+                <p class="text-muted">
+                    @if (!string.IsNullOrEmpty(ViewData["CurrentFilter"]?.ToString()) ||
+                                    !string.IsNullOrEmpty(ViewData["SpecializationFilter"]?.ToString()))
+                    {
+                        <span>Tente ajustar os filtros de pesquisa ou </span>
+                    }
+                    <a asp-action="Create" class="btn btn-primary">
+                        Criar o primeiro funcionário
+                    </a>
+                </p>
+            </div>
+        }
+    </div>
+</div> *@
+
+
+
+
+@* 
+
+@model IEnumerable<HumanResources.Models.Employee>
+
+@{
+    ViewData["Title"] = "Funcionários";
+}
+
+<h1>Lista de Funcionários</h1>
+
+<p>
+    <a asp-action="Create">Criar Novo</a>
+</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Position)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SpecializationArea)
+            </th>
+            <th>
+                Projetos
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Position)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.SpecializationArea)
+                </td>
+                <td>
+                    @if (item.Contracts != null && item.Contracts.Any())
+                    {
+                        @item.Contracts.Count()
+                    }
+                    else
+                    {
+                        <span>0</span>
+                    }
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.Id">Editar</a> |
+                    <a asp-action="Details" asp-route-id="@item.Id">Detalhes</a> |
+                    <a asp-action="Delete" asp-route-id="@item.Id">Eliminar</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table> *@
