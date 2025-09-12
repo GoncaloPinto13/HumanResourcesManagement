@@ -19,7 +19,7 @@ namespace HumanResources.Models
         [Required(ErrorMessage = "O NIF é obrigatório.")]
         [StringLength(9)]
         [Column("Nif")]
-        public string Nif { get; set; }
+        public string Nif{ get; set; }
 
         [EmailAddress]
         [StringLength(255)]

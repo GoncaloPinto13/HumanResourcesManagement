@@ -1,4 +1,5 @@
-﻿using HumanResources.Models;
+﻿using Microsoft.AspNetCore.Identity;
+using HumanResources.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace HumanResources.Data
@@ -8,12 +9,13 @@ namespace HumanResources.Data
         public Context (DbContextOptions<Context> options) : base(options)
         {
         }
+
         public DbSet<Client> Clients { get; set; }
         public DbSet<Employee> Employees { get; set; }
         public DbSet<Project> Projects { get; set; }
         public DbSet<Contract> Contracts { get; set; }
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        protected override void OnModelCreating (ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
@@ -52,3 +54,4 @@ namespace HumanResources.Data
         }
     }
 }
+
