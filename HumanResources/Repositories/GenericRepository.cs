@@ -3,9 +3,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HumanResources.Repositories
 {
-   
-    
-
         /// Implementação base: concentra o acesso ao DbSet<T>.
         /// Mantém SaveChanges dentro do repositório para simplificar (sem Unit of Work).
         public class GenericRepository<T> : IGenericRepository<T> where T : class
