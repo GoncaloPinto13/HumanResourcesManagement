@@ -1,4 +1,5 @@
 using HumanResources.Data;
+using HumanResources.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 namespace HumanResources
@@ -15,6 +16,10 @@ namespace HumanResources
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
             builder.Services.AddDbContext<Context>(options=> options.UseSqlServer(connectionString));
+
+            // >>> Registo de repositórios (DI)
+            builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+            builder.Services.AddScoped<IClientRepository, ClientRepository>();
 
             var app = builder.Build();
 
