@@ -1,4 +1,5 @@
-﻿using System;
+﻿using HumanResources.Areas.Identity.Data;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -41,6 +42,12 @@ namespace HumanResources.Models
         [NotMapped]
         [Display(Name = "Available")]
         public bool IsAvailable => ActiveContracts == 0;
+
+        // Chave Estrangeira que vai ligar ao Id da tabela AspNetUsers
+        public string UserId { get; set; }
+
+        [ForeignKey("UserId")]
+        public virtual HumanResourcesUser User { get; set; }
 
         // --- Relação de Navegação ---
         // Relação 1-N (Um funcionário tem muitos EmployeeContracts)

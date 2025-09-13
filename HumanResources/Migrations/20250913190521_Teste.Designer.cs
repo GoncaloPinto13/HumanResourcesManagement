@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HumanResources.Migrations
 {
     [DbContext(typeof(HumanResourcesContext))]
-    [Migration("20250913183303_Teste")]
+    [Migration("20250913190521_Teste")]
     partial class Teste
     {
         /// <inheritdoc />
@@ -117,22 +117,20 @@ namespace HumanResources.Migrations
                     b.Property<string>("CompanyName")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)")
-                        .HasColumnName("CompanyName");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)")
-                        .HasColumnName("Email");
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("Nif")
                         .IsRequired()
                         .HasMaxLength(9)
-                        .HasColumnType("nvarchar(9)")
-                        .HasColumnName("Nif");
+                        .HasColumnType("nvarchar(9)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Clients");
                 });
@@ -211,7 +209,13 @@ namespace HumanResources.Migrations
                         .HasColumnType("nvarchar(100)")
                         .HasColumnName("SpecializationArea");
 
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Employees");
                 });
@@ -440,6 +444,17 @@ namespace HumanResources.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("HumanResources.Models.Client", b =>
+                {
+                    b.HasOne("HumanResources.Areas.Identity.Data.HumanResourcesUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("HumanResources.Models.Contract", b =>
                 {
                     b.HasOne("HumanResources.Models.Client", "Client")
@@ -457,6 +472,17 @@ namespace HumanResources.Migrations
                     b.Navigation("Client");
 
                     b.Navigation("Project");
+                });
+
+            modelBuilder.Entity("HumanResources.Models.Employee", b =>
+                {
+                    b.HasOne("HumanResources.Areas.Identity.Data.HumanResourcesUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("HumanResources.Models.EmployeeContract", b =>
