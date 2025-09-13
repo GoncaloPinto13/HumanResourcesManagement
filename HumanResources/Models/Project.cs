@@ -15,10 +15,10 @@ namespace HumanResources.Models
         [Required]
         [StringLength(150)]
         [Column("ProjectName")]
-        public string ProjectName { get; set; }
+        public string? ProjectName { get; set; }
 
         [Column("Description", TypeName = "nvarchar(MAX)")]
-        public string Description { get; set; }
+        public string? Description { get; set; }
 
         [Column("StartDate", TypeName = "date")]
         public DateTime StartDate { get; set; }
@@ -29,16 +29,20 @@ namespace HumanResources.Models
         [Column("Budget", TypeName = "decimal(18, 2)")]
         public decimal Budget { get; set; }
 
+        [Column("Status", TypeName = "nvarchar(MAX)")]
+        public ProjectStatus ProjectStatus { get; set; }
+
+
         // --- Relações ---
 
         // Relação N-1: Um Projeto pertence a UM Cliente
         [Required]
         public int ClientId { get; set; }
-        public Client Client { get; set; }
+        public Client? Client { get; set; }
 
-        // Relação 1-1: Um Projeto tem UM Contrato
+        // Relação 1-1: Um Projeto tem varios Contratos
         // A chave estrangeira está definida na classe Contract
-        public Contract Contract { get; set; }
+        public ICollection<Contract> Contracts { get; set; } = new List<Contract>();
 
         // Relação N-N: Um Projeto tem MUITOS Funcionários
         public ICollection<Employee> Employees { get; set; } = new List<Employee>();

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HumanResources.Migrations
 {
     [DbContext(typeof(HumanResourcesContext))]
-    [Migration("20250912202216_teste")]
-    partial class teste
+    [Migration("20250913190521_Teste")]
+    partial class Teste
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -117,22 +117,20 @@ namespace HumanResources.Migrations
                     b.Property<string>("CompanyName")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)")
-                        .HasColumnName("CompanyName");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)")
-                        .HasColumnName("Email");
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("Nif")
                         .IsRequired()
                         .HasMaxLength(9)
-                        .HasColumnType("nvarchar(9)")
-                        .HasColumnName("Nif");
+                        .HasColumnType("nvarchar(9)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Clients");
                 });
@@ -179,8 +177,7 @@ namespace HumanResources.Migrations
 
                     b.HasIndex("ClientId");
 
-                    b.HasIndex("ProjectId")
-                        .IsUnique();
+                    b.HasIndex("ProjectId");
 
                     b.ToTable("Contracts");
                 });
@@ -212,9 +209,41 @@ namespace HumanResources.Migrations
                         .HasColumnType("nvarchar(100)")
                         .HasColumnName("SpecializationArea");
 
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("Id");
 
+                    b.HasIndex("UserId");
+
                     b.ToTable("Employees");
+                });
+
+            modelBuilder.Entity("HumanResources.Models.EmployeeContract", b =>
+                {
+                    b.Property<int>("EmployeeContractId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("EmployeeContractId"));
+
+                    b.Property<int>("ContractId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("DurationInDays")
+                        .HasColumnType("int");
+
+                    b.Property<int>("EmployeeId")
+                        .HasColumnType("int");
+
+                    b.HasKey("EmployeeContractId");
+
+                    b.HasIndex("ContractId");
+
+                    b.HasIndex("EmployeeId");
+
+                    b.ToTable("EmployeeContracts");
                 });
 
             modelBuilder.Entity("HumanResources.Models.Project", b =>
@@ -234,7 +263,6 @@ namespace HumanResources.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasColumnType("nvarchar(MAX)")
                         .HasColumnName("Description");
 
@@ -247,6 +275,11 @@ namespace HumanResources.Migrations
                         .HasMaxLength(150)
                         .HasColumnType("nvarchar(150)")
                         .HasColumnName("ProjectName");
+
+                    b.Property<string>("ProjectStatus")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(MAX)")
+                        .HasColumnName("Status");
 
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("date")
@@ -411,6 +444,17 @@ namespace HumanResources.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("HumanResources.Models.Client", b =>
+                {
+                    b.HasOne("HumanResources.Areas.Identity.Data.HumanResourcesUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("HumanResources.Models.Contract", b =>
                 {
                     b.HasOne("HumanResources.Models.Client", "Client")
@@ -420,14 +464,44 @@ namespace HumanResources.Migrations
                         .IsRequired();
 
                     b.HasOne("HumanResources.Models.Project", "Project")
-                        .WithOne("Contract")
-                        .HasForeignKey("HumanResources.Models.Contract", "ProjectId")
+                        .WithMany("Contracts")
+                        .HasForeignKey("ProjectId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Client");
 
                     b.Navigation("Project");
+                });
+
+            modelBuilder.Entity("HumanResources.Models.Employee", b =>
+                {
+                    b.HasOne("HumanResources.Areas.Identity.Data.HumanResourcesUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("HumanResources.Models.EmployeeContract", b =>
+                {
+                    b.HasOne("HumanResources.Models.Contract", "Contract")
+                        .WithMany("EmployeeContracts")
+                        .HasForeignKey("ContractId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("HumanResources.Models.Employee", "Employee")
+                        .WithMany("EmployeeContracts")
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Contract");
+
+                    b.Navigation("Employee");
                 });
 
             modelBuilder.Entity("HumanResources.Models.Project", b =>
@@ -499,10 +573,19 @@ namespace HumanResources.Migrations
                     b.Navigation("Projects");
                 });
 
+            modelBuilder.Entity("HumanResources.Models.Contract", b =>
+                {
+                    b.Navigation("EmployeeContracts");
+                });
+
+            modelBuilder.Entity("HumanResources.Models.Employee", b =>
+                {
+                    b.Navigation("EmployeeContracts");
+                });
+
             modelBuilder.Entity("HumanResources.Models.Project", b =>
                 {
-                    b.Navigation("Contract")
-                        .IsRequired();
+                    b.Navigation("Contracts");
                 });
 #pragma warning restore 612, 618
         }

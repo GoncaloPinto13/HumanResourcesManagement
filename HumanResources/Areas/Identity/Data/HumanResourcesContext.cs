@@ -27,6 +27,9 @@ public class HumanResourcesContext : IdentityDbContext<HumanResourcesUser>
     public DbSet<Project> Projects { get; set; }
     public DbSet<Contract> Contracts { get; set; }
 
+    // --- Adicione esta linha que faltava no seu ficheiro ---
+    public DbSet<EmployeeContract> EmployeeContracts { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -42,16 +45,24 @@ public class HumanResourcesContext : IdentityDbContext<HumanResourcesUser>
         // --- Configuração explícita das relações (Boas práticas) ---
 
         // Configura a relação 1-para-1 entre Project e Contract
-        modelBuilder.Entity<Project>()
-            .HasOne(p => p.Contract)
-            .WithOne(c => c.Project)
-            .HasForeignKey<Contract>(c => c.ProjectId);
+        modelBuilder.Entity<Contract>()
+                .HasOne(c => c.Project)
+                .WithMany(p => p.Contracts)
+                .HasForeignKey(c => c.ProjectId);
 
         // Configura a relação N-N entre Project e Employee, especificando a tabela de junção
         modelBuilder.Entity<Project>()
             .HasMany(p => p.Employees)
             .WithMany(e => e.Projects)
             .UsingEntity(j => j.ToTable("ProjectEmployees"));
+
+        // Configura a relação 1-para-Muitos: Um Contrato tem muitos EmployeeContracts
+        modelBuilder.Entity<EmployeeContract>()
+            .HasOne(ec => ec.Contract)
+            .WithMany(c => c.EmployeeContracts)
+            .HasForeignKey(ec => ec.ContractId);
     }
+
+public DbSet<HumanResources.Models.EmployeeContract> EmployeeContract { get; set; } = default!;
 
 }
