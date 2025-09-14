@@ -1,68 +1,79 @@
 ﻿using HumanResources.Areas.Identity.Data;
 using HumanResources.Models;
-using Microsoft.AspNetCore.Identity;
+using HumanResources.ViewModels; // ADICIONADO: Para o ViewModel do relatório
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
-namespace HumanResources.Data;
-
-public class HumanResourcesContext : IdentityDbContext<HumanResourcesUser>
+namespace HumanResources.Data
 {
-    public HumanResourcesContext(DbContextOptions<HumanResourcesContext> options)
-        : base(options)
+    public class HumanResourcesContext : IdentityDbContext<HumanResourcesUser>
     {
-    }
-
-    //protected override void OnModelCreating(ModelBuilder builder)
-    //{
-    //    base.OnModelCreating(builder);
-    //    // Customize the ASP.NET Identity model and override the defaults if needed.
-    //    // For example, you can rename the ASP.NET Identity table names and more.
-    //    // Add your customizations after calling base.OnModelCreating(builder);
-    //}
-
-
-    public DbSet<Client> Clients { get; set; }
-    public DbSet<Employee> Employees { get; set; }
-    public DbSet<Project> Projects { get; set; }
-    public DbSet<Contract> Contracts { get; set; }
-
-    // --- Adicione esta linha que faltava no seu ficheiro ---
-    public DbSet<EmployeeContract> EmployeeContracts { get; set; }
-
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
-    {
-        base.OnModelCreating(modelBuilder);
-
-        // --- SOLUÇÃO DEFINITIVA PARA O ERRO DE "CYCLES OR MULTIPLE CASCADE PATHS" ---
-        // Este código desativa a eliminação em cascata para TODAS as relações,
-        // impedindo que o SQL Server encontre caminhos ambíguos para apagar dados.
-        foreach (var foreignKey in modelBuilder.Model.GetEntityTypes().SelectMany(e => e.GetForeignKeys()))
+        public HumanResourcesContext(DbContextOptions<HumanResourcesContext> options)
+            : base(options)
         {
-            foreignKey.DeleteBehavior = DeleteBehavior.Restrict;
         }
 
-        // --- Configuração explícita das relações (Boas práticas) ---
+        // --- DbSets para as suas tabelas de negócio ---
+        public DbSet<Client> Clients { get; set; }
+        public DbSet<Employee> Employees { get; set; }
+        public DbSet<Project> Projects { get; set; }
+        public DbSet<Contract> Contracts { get; set; }
+        public DbSet<EmployeeContract> EmployeeContracts { get; set; }
 
-        // Configura a relação 1-para-1 entre Project e Contract
-        modelBuilder.Entity<Contract>()
+        // --- DbSet para o resultado da Stored Procedure ---
+        public DbSet<ProjectPerformanceViewModel> ProjectPerformanceReport { get; set; }
+
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            // É crucial chamar a implementação base primeiro para configurar o Identity
+            base.OnModelCreating(modelBuilder);
+
+            // --- Configuração para o ViewModel do Relatório ---
+            // Diz ao EF Core que este tipo não tem uma tabela nem chave primária
+            modelBuilder.Entity<ProjectPerformanceViewModel>().HasNoKey();
+
+
+            // --- Configurações das Relações de Negócio (Opcional, mas boa prática) ---
+            
+            // Relação N-N entre Project e Employee é gerida implicitamente pelo EF Core
+            // porque ambos os modelos têm uma ICollection um do outro.
+            // A configuração explícita foi removida para evitar conflitos.
+
+            // Relação 1-N: Um Projeto tem muitos Contratos
+            modelBuilder.Entity<Contract>()
                 .HasOne(c => c.Project)
                 .WithMany(p => p.Contracts)
                 .HasForeignKey(c => c.ProjectId);
 
-        // Configura a relação N-N entre Project e Employee, especificando a tabela de junção
-        modelBuilder.Entity<Project>()
-            .HasMany(p => p.Employees)
-            .WithMany(e => e.Projects)
-            .UsingEntity(j => j.ToTable("ProjectEmployees"));
+            // Relação 1-N: Um Funcionário tem muitas associações a contratos (EmployeeContracts)
+            modelBuilder.Entity<EmployeeContract>()
+                .HasOne(ec => ec.Employee)
+                .WithMany(e => e.EmployeeContracts)
+                .HasForeignKey(ec => ec.EmployeeId);
 
-        // Configura a relação 1-para-Muitos: Um Contrato tem muitos EmployeeContracts
-        modelBuilder.Entity<EmployeeContract>()
-            .HasOne(ec => ec.Contract)
-            .WithMany(c => c.EmployeeContracts)
-            .HasForeignKey(ec => ec.ContractId);
+            // Relação 1-N: Um Contrato tem muitas associações a funcionários (EmployeeContracts)
+            modelBuilder.Entity<EmployeeContract>()
+                .HasOne(ec => ec.Contract)
+                .WithMany(c => c.EmployeeContracts)
+                .HasForeignKey(ec => ec.ContractId);
+
+
+            // --- Prevenção de Eliminação em Cascata Múltipla ---
+            // Boa prática para evitar erros no SQL Server
+            foreach (var foreignKey in modelBuilder.Model.GetEntityTypes().SelectMany(e => e.GetForeignKeys()))
+            {
+                foreignKey.DeleteBehavior = DeleteBehavior.Restrict;
+            }
+        }
+        public DbSet<HumanResources.Models.EmployeeContract> EmployeeContract { get; set; } = default!;
+
     }
 
-public DbSet<HumanResources.Models.EmployeeContract> EmployeeContract { get; set; } = default!;
-
 }
+
+
+
+
+

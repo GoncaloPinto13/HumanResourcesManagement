@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/HumanResources.styles.css" asp-append-version="true" />
 
-    <!-- ADICIONADO: Estilo para ativar o dropdown com hover -->
+    <!-- Estilo para ativar o dropdown com hover -->
     <style>
         .dropdown:hover .dropdown-menu {
             display: block;
@@ -71,9 +71,20 @@
                                 <li><a class="dropdown-item" asp-controller="Projects" asp-action="Create">Criar Novo Projeto</a></li>
                             </ul>
                         </li>
+
+                        <!-- ADICIONADO: Menu Dropdown para Relatórios -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle text-dark" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Relatórios
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" asp-controller="Reports" asp-action="ProjectPerformance">Desempenho de Projetos</a></li>
+                            </ul>
+                        </li>
+
                     </ul>
 
-                    <!-- ADICIONADO: Botões de Login/Registo/Logout -->
+                    <!-- Botões de Login/Registo/Logout -->
                     <partial name="_LoginPartial" />
                 </div>
             </div>
@@ -96,3 +107,4 @@
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
+
