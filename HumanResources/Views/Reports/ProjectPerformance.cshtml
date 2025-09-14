@@ -1,0 +1,56 @@
+﻿@model IEnumerable<HumanResources.ViewModels.ProjectPerformanceViewModel>
+
+@{
+    ViewData["Title"] = "Relatório de Desempenho dos Projetos";
+}
+
+<h1>@ViewData["Title"]</h1>
+<p>Este relatório consolida o desempenho financeiro e temporal de cada projeto.</p>
+<hr />
+
+<div class="table-responsive">
+    <table class="table table-striped table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th>@Html.DisplayNameFor(model => model.ProjectName)</th>
+                <th>@Html.DisplayNameFor(model => model.Orcamento)</th>
+                <th>@Html.DisplayNameFor(model => model.CustoReal)</th>
+                <th>@Html.DisplayNameFor(model => model.Desvio)</th>
+                <th>@Html.DisplayNameFor(model => model.TempoTotalPrevisto)</th>
+                <th>@Html.DisplayNameFor(model => model.TempoDespendido)</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.Any())
+            {
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@Html.DisplayFor(modelItem => item.ProjectName)</td>
+                        <td>@Html.DisplayFor(modelItem => item.Orcamento)</td>
+                        <td>@Html.DisplayFor(modelItem => item.CustoReal)</td>
+                        <td>
+                            @if (item.Desvio > 0)
+                            {
+                                <span class="text-danger fw-bold">@item.Desvio.ToString("C")</span>
+                            }
+                            else
+                            {
+                                <span class="text-success fw-bold">@item.Desvio.ToString("C")</span>
+                            }
+                        </td>
+                        <td>@Html.DisplayFor(modelItem => item.TempoTotalPrevisto)</td>
+                        <td>@Html.DisplayFor(modelItem => item.TempoDespendido)</td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="6" class="text-center">Não foram encontrados dados para apresentar. Execute o Seeder para popular a base de dados.</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
