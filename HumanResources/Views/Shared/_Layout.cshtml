@@ -7,6 +7,14 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/HumanResources.styles.css" asp-append-version="true" />
+
+    <!-- ADICIONADO: Estilo para ativar o dropdown com hover -->
+    <style>
+        .dropdown:hover .dropdown-menu {
+            display: block;
+            margin-top: 0;
+        }
+    </style>
 </head>
 <body>
     <header>
@@ -19,19 +27,54 @@
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Clients" asp-action="Index">Clietns</a>
+
+                        <!-- Menu Dropdown para Clientes -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle text-dark" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Clientes
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" asp-controller="Clients" asp-action="Index">Listar Clientes</a></li>
+                                <li><a class="dropdown-item" asp-controller="Clients" asp-action="Create">Criar Novo Cliente</a></li>
+                            </ul>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Employees" asp-action="Index">Employees</a>
+
+                        <!-- Menu Dropdown para Funcionários -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle text-dark" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Funcionários
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" asp-controller="Employees" asp-action="Index">Listar Funcionários</a></li>
+                                <li><a class="dropdown-item" asp-controller="Employees" asp-action="Create">Criar Novo Funcionário</a></li>
+                            </ul>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Contracts" asp-action="Index">Contracts</a>
+
+                        <!-- Menu Dropdown para Contratos -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle text-dark" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Contratos
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" asp-controller="Contracts" asp-action="Index">Listar Contratos</a></li>
+                                <li><a class="dropdown-item" asp-controller="Contracts" asp-action="Create">Criar Novo Contrato</a></li>
+                            </ul>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Projects" asp-action="Index">Projects</a>
+
+                        <!-- Menu Dropdown para Projetos -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle text-dark" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Projetos
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" asp-controller="Projects" asp-action="Index">Listar Projetos</a></li>
+                                <li><a class="dropdown-item" asp-controller="Projects" asp-action="Create">Criar Novo Projeto</a></li>
+                            </ul>
                         </li>
                     </ul>
+
+                    <!-- ADICIONADO: Botões de Login/Registo/Logout -->
+                    <partial name="_LoginPartial" />
                 </div>
             </div>
         </nav>

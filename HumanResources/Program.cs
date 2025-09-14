@@ -1,4 +1,5 @@
 using HumanResources.Data;
+using HumanResources.Data.Seeder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using HumanResources.Areas.Identity.Data;
@@ -84,6 +85,13 @@ namespace HumanResources
                     await userManager.AddToRoleAsync(user, "Admin");
 
                 }
+            }
+
+            using (var scope = app.Services.CreateScope())
+            {
+                var services = scope.ServiceProvider;
+                // Chama o método estático da sua classe seeder
+                await HumanResourcesSeeder.Initialize(services);
             }
 
 
