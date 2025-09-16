@@ -45,6 +45,6 @@ namespace HumanResources.Models
         public ICollection<Contract> Contracts { get; set; } = new List<Contract>();
 
         // Relação N-N: Um Projeto tem MUITOS Funcionários
-        public ICollection<Employee> Employees { get; set; } = new List<Employee>();
+        //public ICollection<Employee> Employees { get; set; } = new List<Employee>();
     }
 }

@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using HumanResources.Data;
 using HumanResources.Models;
 
+
 namespace HumanResources.Controllers
 {
     public class ContractsController : Controller
@@ -22,7 +23,7 @@ namespace HumanResources.Controllers
         // GET: Contracts
         public async Task<IActionResult> Index()
         {
-            var humanResourcesContext = _context.Contracts.Include(c => c.Client).Include(c => c.Project);
+            var humanResourcesContext = _context.Contracts.Include(c => c.Project.Client);
             return View(await humanResourcesContext.ToListAsync());
         }
 
@@ -35,9 +36,8 @@ namespace HumanResources.Controllers
             }
 
             var contract = await _context.Contracts
-                .Include(c => c.Client)
-                .Include(c => c.Project)
-                .FirstOrDefaultAsync(m => m.Id == id);
+         .Include(c => c.Project.Client)
+         .FirstOrDefaultAsync(m => m.Id == id);
             if (contract == null)
             {
                 return NotFound();
@@ -61,13 +61,16 @@ namespace HumanResources.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,ServiceDescription,StartDate,ExpirationDate,Value,TermsAndConditions,ClientId,ProjectId")] Contract contract)
         {
+            // ADICIONE ESTA LINHA AQUI
+            ModelState.Remove("Project");
+
             if (ModelState.IsValid)
             {
                 _context.Add(contract);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["ClientId"] = new SelectList(_context.Clients, "Id", "CompanyName", contract.ClientId);
+            //ViewData["ClientId"] = new SelectList(_context.Clients, "Id", "CompanyName", contract.ClientId);
             ViewData["ProjectId"] = new SelectList(_context.Projects, "Id", "ProjectName", contract.ProjectId);
             return View(contract);
         }
@@ -85,7 +88,7 @@ namespace HumanResources.Controllers
             {
                 return NotFound();
             }
-            ViewData["ClientId"] = new SelectList(_context.Clients, "Id", "CompanyName", contract.ClientId);
+            //ViewData["ClientId"] = new SelectList(_context.Clients, "Id", "CompanyName", contract.ClientId);
             ViewData["ProjectId"] = new SelectList(_context.Projects, "Id", "ProjectName", contract.ProjectId);
             return View(contract);
         }
@@ -122,7 +125,7 @@ namespace HumanResources.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["ClientId"] = new SelectList(_context.Clients, "Id", "CompanyName", contract.ClientId);
+           // ViewData["ClientId"] = new SelectList(_context.Clients, "Id", "CompanyName", contract.ClientId);
             ViewData["ProjectId"] = new SelectList(_context.Projects, "Id", "ProjectName", contract.ProjectId);
             return View(contract);
         }
@@ -136,9 +139,8 @@ namespace HumanResources.Controllers
             }
 
             var contract = await _context.Contracts
-                .Include(c => c.Client)
-                .Include(c => c.Project)
-                .FirstOrDefaultAsync(m => m.Id == id);
+         .Include(c => c.Project.Client)
+         .FirstOrDefaultAsync(m => m.Id == id);
             if (contract == null)
             {
                 return NotFound();

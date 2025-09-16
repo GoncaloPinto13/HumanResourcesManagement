@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace HumanResources.Migrations
 {
     /// <inheritdoc />
-    public partial class teste : Migration
+    public partial class RefactorProjectEmployeeRelationship : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -48,6 +48,21 @@ namespace HumanResources.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ProjectPerformanceReport",
+                columns: table => new
+                {
+                    ProjectId = table.Column<int>(type: "int", nullable: false),
+                    ProjectName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Orcamento = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    CustoReal = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    TempoTotalPrevisto = table.Column<int>(type: "int", nullable: false),
+                    TempoDespendido = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
                 });
 
             migrationBuilder.CreateTable(
@@ -211,7 +226,8 @@ namespace HumanResources.Migrations
                     DueDate = table.Column<DateTime>(type: "date", nullable: false),
                     Budget = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     Status = table.Column<string>(type: "nvarchar(MAX)", nullable: false),
-                    ClientId = table.Column<int>(type: "int", nullable: false)
+                    ClientId = table.Column<int>(type: "int", nullable: false),
+                    EmployeeId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -221,6 +237,12 @@ namespace HumanResources.Migrations
                         column: x => x.ClientId,
                         principalTable: "Clients",
                         principalColumn: "ClientId",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Projects_Employees_EmployeeId",
+                        column: x => x.EmployeeId,
+                        principalTable: "Employees",
+                        principalColumn: "EmployeeId",
                         onDelete: ReferentialAction.Restrict);
                 });
 
@@ -235,8 +257,8 @@ namespace HumanResources.Migrations
                     ExpirationDate = table.Column<DateTime>(type: "date", nullable: false),
                     Value = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     TermsAndConditions = table.Column<string>(type: "nvarchar(MAX)", nullable: false),
-                    ClientId = table.Column<int>(type: "int", nullable: false),
-                    ProjectId = table.Column<int>(type: "int", nullable: false)
+                    ProjectId = table.Column<int>(type: "int", nullable: false),
+                    ClientId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -250,30 +272,6 @@ namespace HumanResources.Migrations
                     table.ForeignKey(
                         name: "FK_Contracts_Projects_ProjectId",
                         column: x => x.ProjectId,
-                        principalTable: "Projects",
-                        principalColumn: "ProjectId",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ProjectEmployees",
-                columns: table => new
-                {
-                    EmployeesId = table.Column<int>(type: "int", nullable: false),
-                    ProjectsId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ProjectEmployees", x => new { x.EmployeesId, x.ProjectsId });
-                    table.ForeignKey(
-                        name: "FK_ProjectEmployees_Employees_EmployeesId",
-                        column: x => x.EmployeesId,
-                        principalTable: "Employees",
-                        principalColumn: "EmployeeId",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_ProjectEmployees_Projects_ProjectsId",
-                        column: x => x.ProjectsId,
                         principalTable: "Projects",
                         principalColumn: "ProjectId",
                         onDelete: ReferentialAction.Restrict);
@@ -376,14 +374,14 @@ namespace HumanResources.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ProjectEmployees_ProjectsId",
-                table: "ProjectEmployees",
-                column: "ProjectsId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Projects_ClientId",
                 table: "Projects",
                 column: "ClientId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Projects_EmployeeId",
+                table: "Projects",
+                column: "EmployeeId");
         }
 
         /// <inheritdoc />
@@ -408,7 +406,7 @@ namespace HumanResources.Migrations
                 name: "EmployeeContracts");
 
             migrationBuilder.DropTable(
-                name: "ProjectEmployees");
+                name: "ProjectPerformanceReport");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
@@ -417,13 +415,13 @@ namespace HumanResources.Migrations
                 name: "Contracts");
 
             migrationBuilder.DropTable(
-                name: "Employees");
-
-            migrationBuilder.DropTable(
                 name: "Projects");
 
             migrationBuilder.DropTable(
                 name: "Clients");
+
+            migrationBuilder.DropTable(
+                name: "Employees");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");

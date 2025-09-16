@@ -74,7 +74,7 @@ namespace HumanResources.Data.Seeder
 
         private static async Task SeedBusinessDataAsync(HumanResourcesContext context, UserManager<HumanResourcesUser> userManager, ILogger<HumanResourcesSeeder> logger)
         {
-            // --- Criação de Clientes e seus Users ---
+            // --- 1. Criação de Clientes e Funcionários (e seus Users) ---
             var clientUser1 = new HumanResourcesUser { UserName = "cliente.tech@email.com", Email = "cliente.tech@email.com", EmailConfirmed = true };
             await userManager.CreateAsync(clientUser1, "Cliente@123!");
             await userManager.AddToRoleAsync(clientUser1, "Cliente");
@@ -86,9 +86,7 @@ namespace HumanResources.Data.Seeder
             var client2 = new Client { CompanyName = "Innovate Co.", Nif = "509123789", UserId = clientUser2.Id };
 
             context.Clients.AddRange(client1, client2);
-            await context.SaveChangesAsync(); // Guardar para obter os IDs
 
-            // --- Criação de Funcionários e seus Users ---
             var pmUser = new HumanResourcesUser { UserName = "gestor.ana@email.com", Email = "gestor.ana@email.com", EmailConfirmed = true };
             await userManager.CreateAsync(pmUser, "Funcionario@123!");
             await userManager.AddToRoleAsync(pmUser, "Project Manager");
@@ -105,9 +103,9 @@ namespace HumanResources.Data.Seeder
             var employee3 = new Employee { Name = "Rita Pereira", Position = "UI/UX Designer", SpecializationArea = "Design", UserId = empUser3.Id };
 
             context.Employees.AddRange(employee1, employee2, employee3);
-            await context.SaveChangesAsync(); // Guardar para obter os IDs
+            await context.SaveChangesAsync(); // Guardar Clientes e Funcionários para obter os seus IDs
 
-            // --- Criação de Projetos ---
+            // --- 2. Criação de Projetos (associados aos Clientes) ---
             var project1 = new Project
             {
                 ProjectName = "Novo Website Corporativo",
@@ -117,7 +115,7 @@ namespace HumanResources.Data.Seeder
                 Budget = 25000,
                 ProjectStatus = ProjectStatus.InProgress,
                 ClientId = client1.Id,
-                Employees = new List<Employee> { employee1, employee2 }
+                // REMOVIDO: A associação direta Employee-Project já não existe.
             };
 
             var project2 = new Project
@@ -129,21 +127,19 @@ namespace HumanResources.Data.Seeder
                 Budget = 50000,
                 ProjectStatus = ProjectStatus.NotStarted,
                 ClientId = client2.Id,
-                Employees = new List<Employee> { employee1, employee3 }
             };
 
             context.Projects.AddRange(project1, project2);
-            await context.SaveChangesAsync(); // Guardar para obter os IDs
+            await context.SaveChangesAsync(); // Guardar Projetos para obter os seus IDs
 
-            // --- CRIAÇÃO DE CONTRATOS ---
+            // --- 3. Criação de Contratos (associados aos Projetos e Clientes) ---
             var contract1 = new Contract
             {
                 ServiceDescription = "Contrato de Desenvolvimento de Website",
                 StartDate = project1.StartDate,
                 ExpirationDate = project1.DueDate,
                 Value = project1.Budget,
-                TermsAndConditions = "Termos e condições padrão.",
-                ClientId = client1.Id,
+                TermsAndConditions = true,
                 ProjectId = project1.Id
             };
 
@@ -153,15 +149,14 @@ namespace HumanResources.Data.Seeder
                 StartDate = project2.StartDate,
                 ExpirationDate = project2.DueDate,
                 Value = project2.Budget,
-                TermsAndConditions = "Termos e condições padrão.",
-                ClientId = client2.Id,
+                TermsAndConditions = true,
                 ProjectId = project2.Id
             };
 
             context.Contracts.AddRange(contract1, contract2);
-            await context.SaveChangesAsync(); // Guardar para obter os IDs
+            await context.SaveChangesAsync(); // Guardar Contratos para obter os seus IDs
 
-            // --- ASSOCIAÇÃO DE FUNCIONÁRIOS AOS CONTRATOS (EmployeeContract) ---
+            // --- 4. Associação de Funcionários aos Contratos (a nova lógica) ---
             var empContract1 = new EmployeeContract { EmployeeId = employee1.Id, ContractId = contract1.Id, DurationInDays = 90 };
             var empContract2 = new EmployeeContract { EmployeeId = employee2.Id, ContractId = contract1.Id, DurationInDays = 90 };
             var empContract3 = new EmployeeContract { EmployeeId = employee1.Id, ContractId = contract2.Id, DurationInDays = 180 };
@@ -170,7 +165,8 @@ namespace HumanResources.Data.Seeder
             context.EmployeeContracts.AddRange(empContract1, empContract2, empContract3, empContract4);
 
             await context.SaveChangesAsync();
-            logger.LogInformation("Base de dados populada com sucesso.");
+            logger.LogInformation("Base de dados populada com sucesso, seguindo a nova lógica de negócio.");
         }
     }
 }
+

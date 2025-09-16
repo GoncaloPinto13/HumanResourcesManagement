@@ -1,36 +1,72 @@
 ﻿@model HumanResources.Models.Employee
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Detalhes do Funcionário";
 }
 
-<h1>Details</h1>
+<h1>@ViewData["Title"]</h1>
 
 <div>
-    <h4>Employee</h4>
+    <h4>Dados Pessoais e de Acesso</h4>
     <hr />
     <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Name)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Name)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Position)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Position)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.SpecializationArea)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.SpecializationArea)
-        </dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Name)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(model => model.Name)</dd>
+
+        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Position)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(model => model.Position)</dd>
+
+        <dt class="col-sm-3">Email de Login</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(model => model.User.Email)</dd>
     </dl>
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+
+<!-- NOVA SECÇÃO: Tabela de Projetos Associados -->
+<div class="mt-4">
+    @{
+        // Lógica para obter a lista de projetos únicos a partir dos contratos
+        var projects = Model.EmployeeContracts
+        .Select(ec => ec.Contract.Project)
+        .Where(p => p != null) // Garante que não há projetos nulos
+        .Distinct();
+    }
+    <h4>Projetos Associados (@projects.Count())</h4>
+    <hr />
+
+    @if (projects.Any())
+    {
+        <table class="table table-bordered table-striped">
+            <thead class="table-light">
+                <tr>
+                    <th>Nome do Projeto</th>
+                    <th>Estado</th>
+                    <th>Data de Conclusão</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var project in projects)
+                {
+                    <tr>
+                        <td>
+                            <a asp-controller="Projects" asp-action="Details" asp-route-id="@project.Id">
+                                @project.ProjectName
+                            </a>
+                        </td>
+                        <td>@project.ProjectStatus</td>
+                        <td>@project.DueDate.ToShortDateString()</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <p>Este funcionário não está associado a nenhum projeto de momento.</p>
+    }
 </div>
+
+<div class="mt-4">
+    <a asp-action="Edit" asp-route-id="@Model?.Id" class="btn btn-primary">Editar</a> |
+    <a asp-action="Index" class="btn btn-secondary">Voltar à Lista</a>
+</div>
+

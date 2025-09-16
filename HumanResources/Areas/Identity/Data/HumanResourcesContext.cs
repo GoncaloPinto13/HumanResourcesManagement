@@ -14,14 +14,14 @@ namespace HumanResources.Data
         {
         }
 
-        // --- DbSets para as suas tabelas de negócio ---
         public DbSet<Client> Clients { get; set; }
         public DbSet<Employee> Employees { get; set; }
         public DbSet<Project> Projects { get; set; }
         public DbSet<Contract> Contracts { get; set; }
+
+        // --- NOME CORRIGIDO PARA O PLURAL ---
         public DbSet<EmployeeContract> EmployeeContracts { get; set; }
 
-        // --- DbSet para o resultado da Stored Procedure ---
         public DbSet<ProjectPerformanceViewModel> ProjectPerformanceReport { get; set; }
 
 
@@ -67,7 +67,6 @@ namespace HumanResources.Data
                 foreignKey.DeleteBehavior = DeleteBehavior.Restrict;
             }
         }
-        public DbSet<HumanResources.Models.EmployeeContract> EmployeeContract { get; set; } = default!;
 
     }
 
