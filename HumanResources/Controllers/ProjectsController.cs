@@ -34,9 +34,13 @@ namespace HumanResources.Controllers
                 return NotFound();
             }
 
+            // A consulta original apenas incluía o Cliente
+            // ATUALIZE A CONSULTA PARA INCLUIR TAMBÉM OS CONTRATOS
             var project = await _context.Projects
                 .Include(p => p.Client)
+                .Include(p => p.Contracts) // <-- ADICIONE ESTA LINHA
                 .FirstOrDefaultAsync(m => m.Id == id);
+
             if (project == null)
             {
                 return NotFound();

@@ -1,36 +1,50 @@
-﻿@model HumanResources.Models.EmployeeContract
+﻿@model HumanResources.Models.Employee
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Detalhes do Funcionário";
 }
 
-<h1>Details</h1>
+<h1>@ViewData["Title"]</h1>
 
 <div>
-    <h4>EmployeeContract</h4>
+    <h4>Dados Pessoais e de Acesso</h4>
     <hr />
     <dl class="row">
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.DurationInDays)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.DurationInDays)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Employee)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Employee.Name)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Contract)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Contract.ServiceDescription)
-        </dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Name)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(model => model.Name)</dd>
+
+        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Position)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(model => model.Position)</dd>
+
+        <dt class="col-sm-3">Email de Login</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(model => model.User.Email)</dd>
+
+        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.SpecializationArea)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(model => model.SpecializationArea)</dd>
     </dl>
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.EmployeeContractId">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+
+<!-- Secção para mostrar os projetos associados -->
+<div class="mt-4">
+    <h4>Projetos Associados (@Model.Projects.Count())</h4>
+    <hr />
+    @if (Model.Projects.Any())
+    {
+        <ul class="list-group">
+            @foreach (var project in Model.Projects)
+            {
+                <li class="list-group-item">@project.ProjectName</li>
+            }
+        </ul>
+    }
+    else
+    {
+        <p>Este funcionário não está associado a nenhum projeto de momento.</p>
+    }
 </div>
+
+<div class="mt-4">
+    <a asp-action="Edit" asp-route-id="@Model?.Id" class="btn btn-primary">Editar</a> |
+    <a asp-action="Index" class="btn btn-secondary">Voltar à Lista</a>
+</div>
+

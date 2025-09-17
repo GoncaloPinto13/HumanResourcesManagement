@@ -22,7 +22,7 @@ namespace HumanResources.Controllers
         // GET: EmployeeContracts
         public async Task<IActionResult> Index()
         {
-            var context = _context.EmployeeContract
+            var context = _context.EmployeeContracts
                 .Include(e => e.Employee)
                 .Include(e => e.Contract);
             return View(await context.ToListAsync());
@@ -36,7 +36,7 @@ namespace HumanResources.Controllers
                 return NotFound();
             }
 
-            var employeeContract = await _context.EmployeeContract
+            var employeeContract = await _context.EmployeeContracts
                 .Include(e => e.Contract)
                 .Include(e => e.Employee)
                 .FirstOrDefaultAsync(m => m.EmployeeContractId == id);
@@ -72,7 +72,7 @@ namespace HumanResources.Controllers
             if (ModelState.IsValid)
             {
                 // Verifica se já existe uma ligação entre o funcionário e o contrato
-                var existingLink = await _context.EmployeeContract
+                var existingLink = await _context.EmployeeContracts
                     .FirstOrDefaultAsync(ec => ec.EmployeeId == employeeContract.EmployeeId && ec.ContractId == employeeContract.ContractId);
 
                 if (existingLink != null)
@@ -101,7 +101,7 @@ namespace HumanResources.Controllers
                 return NotFound();
             }
 
-            var employeeContract = await _context.EmployeeContract.FindAsync(id);
+            var employeeContract = await _context.EmployeeContracts.FindAsync(id);
             if (employeeContract == null)
             {
                 return NotFound();
@@ -156,7 +156,7 @@ namespace HumanResources.Controllers
                 return NotFound();
             }
 
-            var employeeContract = await _context.EmployeeContract
+            var employeeContract = await _context.EmployeeContracts
                 .Include(e => e.Contract)
                 .Include(e => e.Employee)
                 .FirstOrDefaultAsync(m => m.EmployeeContractId == id);
@@ -173,10 +173,10 @@ namespace HumanResources.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var employeeContract = await _context.EmployeeContract.FindAsync(id);
+            var employeeContract = await _context.EmployeeContracts.FindAsync(id);
             if (employeeContract != null)
             {
-                _context.EmployeeContract.Remove(employeeContract);
+                _context.EmployeeContracts.Remove(employeeContract);
             }
 
             await _context.SaveChangesAsync();
@@ -185,7 +185,7 @@ namespace HumanResources.Controllers
 
         private bool EmployeeContractExists(int id)
         {
-            return _context.EmployeeContract.Any(e => e.EmployeeContractId == id);
+            return _context.EmployeeContracts.Any(e => e.EmployeeContractId == id);
         }
     }
 }

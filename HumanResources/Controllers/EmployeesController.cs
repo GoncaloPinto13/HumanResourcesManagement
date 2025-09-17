@@ -30,8 +30,13 @@ namespace HumanResources.Controllers
         // GET: Employees
         public async Task<IActionResult> Index()
         {
-            // Inclui os dados do User para podermos mostrar o email na lista
-            var employees = await _context.Employees.Include(e => e.User).ToListAsync();
+            // ATUALIZADO: Carregamos os dados necessários para a contagem de projetos
+            var employees = await _context.Employees
+                .Include(e => e.User)
+                .Include(e => e.EmployeeContracts)
+                    .ThenInclude(ec => ec.Contract) // Inclui o Contrato para cada EmployeeContract
+                .ToListAsync();
+
             return View(employees);
         }
 
@@ -43,9 +48,14 @@ namespace HumanResources.Controllers
                 return NotFound();
             }
 
+            // ATUALIZADO: Carregamos a cadeia completa de relações para mostrar os projetos
             var employee = await _context.Employees
                 .Include(e => e.User)
+                .Include(e => e.EmployeeContracts)
+                    .ThenInclude(ec => ec.Contract)
+                        .ThenInclude(c => c.Project) // Inclui o Projeto para cada Contrato
                 .FirstOrDefaultAsync(m => m.Id == id);
+
             if (employee == null)
             {
                 return NotFound();

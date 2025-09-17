@@ -25,14 +25,14 @@ namespace HumanResources.Models
         public decimal Value { get; set; }
 
         [Column("TermsAndConditions", TypeName = "nvarchar(MAX)")]
-        public string TermsAndConditions { get; set; }
+        public bool TermsAndConditions { get; set; }
 
         // --- Relações ---
 
         // Relação N-1: Um Contrato pertence a UM Cliente
-        [Required]
-        public int ClientId { get; set; }
-        public Client Client { get; set; }
+        //[Required]
+        //public int ClientId { get; set; }
+        //public Client Client { get; set; }
 
         // Relação 1-1: Um Contrato pertence a UM Projeto
         [Required]
