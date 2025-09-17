@@ -52,27 +52,35 @@ namespace HumanResources.Controllers
         }
 
         // GET: Contracts/Create
-        public async Task<IActionResult> Create()
+        public async Task<IActionResult> Create(int? projectId)
         {
-            // Vamos buscar apenas os funcionários que estão disponíveis.
-            // Para isso, precisamos de carregar os seus contratos para usar a propriedade calculada "IsAvailable".
+            // A lógica para buscar funcionários disponíveis permanece a mesma
             var allEmployees = await _context.Employees
                                              .Include(e => e.EmployeeContracts)
                                              .ThenInclude(ec => ec.Contract)
                                              .ToListAsync();
-
             var availableEmployees = allEmployees.Where(e => e.IsAvailable);
 
-            // Criamos o ViewModel
             var viewModel = new CreateContractViewModel
             {
-                // Populamos a lista de seleção com os funcionários disponíveis
                 AvailableEmployees = new SelectList(availableEmployees, "Id", "Name"),
-                // Inicializamos um novo contrato para o formulário
                 Contract = new Contract()
             };
 
-            ViewData["ProjectId"] = new SelectList(_context.Projects, "Id", "ProjectName");
+            if (projectId.HasValue)
+            {
+                // Se um ID de projeto foi passado, pré-define-o no contrato do ViewModel
+                viewModel.Contract.ProjectId = projectId.Value;
+
+                // Atualiza ViewData para que o dropdown de projetos já venha selecionado
+                ViewData["ProjectId"] = new SelectList(_context.Projects, "Id", "ProjectName", projectId.Value);
+            }
+            else
+            {
+                // Comportamento original se nenhum projeto for especificado
+                ViewData["ProjectId"] = new SelectList(_context.Projects, "Id", "ProjectName");
+            }
+
             return View(viewModel);
         }
 
