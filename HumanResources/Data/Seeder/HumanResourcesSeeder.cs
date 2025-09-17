@@ -102,7 +102,22 @@ namespace HumanResources.Data.Seeder
             await userManager.AddToRoleAsync(empUser3, "Employee");
             var employee3 = new Employee { Name = "Rita Pereira", Position = "UI/UX Designer", SpecializationArea = "Design", UserId = empUser3.Id };
 
-            context.Employees.AddRange(employee1, employee2, employee3);
+            var empUser4 = new HumanResourcesUser { UserName = "dev.carlos@email.com", Email = "dev.carlos@email.com", EmailConfirmed = true };
+            await userManager.CreateAsync(empUser4, "Funcionario@123!");
+            await userManager.AddToRoleAsync(empUser4, "Employee");
+            var employee4 = new Employee { Name = "Carlos Martins", Position = "Backend Developer", SpecializationArea = "C#/.NET", UserId = empUser4.Id };
+
+            var empUser5 = new HumanResourcesUser { UserName = "qa.sofia@email.com", Email = "qa.sofia@email.com", EmailConfirmed = true };
+            await userManager.CreateAsync(empUser5, "Funcionario@123!");
+            await userManager.AddToRoleAsync(empUser5, "Employee");
+            var employee5 = new Employee { Name = "Sofia Costa", Position = "QA Tester", SpecializationArea = "Automation", UserId = empUser5.Id };
+
+            var empUser6 = new HumanResourcesUser { UserName = "devops.hugo@email.com", Email = "devops.hugo@email.com", EmailConfirmed = true };
+            await userManager.CreateAsync(empUser6, "Funcionario@123!");
+            await userManager.AddToRoleAsync(empUser6, "Employee");
+            var employee6 = new Employee { Name = "Hugo Viana", Position = "DevOps Engineer", SpecializationArea = "Cloud/CI-CD", UserId = empUser6.Id };
+
+            context.Employees.AddRange(employee1, employee2, employee3, employee4, employee5, employee6);
             await context.SaveChangesAsync(); // Guardar Clientes e Funcionários para obter os seus IDs
 
             // --- 2. Criação de Projetos (associados aos Clientes) ---

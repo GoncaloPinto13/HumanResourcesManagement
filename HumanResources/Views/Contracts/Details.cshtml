@@ -1,55 +1,78 @@
 ﻿@model HumanResources.Models.Contract
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Contract Details";
 }
 
-<h1>Details</h1>
+<div class="row">
+    @* Coluna para os Detalhes do Contrato *@
+    <div class="col-md-7">
+        <div class="card shadow-sm">
+            <div class="card-header">
+                <h3>Contract Details 📄</h3>
+            </div>
+            <div class="card-body">
+                <dl class="row">
+                    <dt class="col-sm-4">@Html.DisplayNameFor(model => model.ServiceDescription)</dt>
+                    <dd class="col-sm-8">@Html.DisplayFor(model => model.ServiceDescription)</dd>
 
-<div>
-    <h4>Contract</h4>
-    <hr />
-    <dl class="row">
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.ServiceDescription)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.ServiceDescription)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.StartDate)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.StartDate)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.ExpirationDate)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.ExpirationDate)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Value)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Value)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.TermsAndConditions)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.TermsAndConditions)
-        </dd>
-        
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Project)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Project.ProjectName)
-        </dd>
-    </dl>
+                    <dt class="col-sm-4">@Html.DisplayNameFor(model => model.Project.ProjectName)</dt>
+                    <dd class="col-sm-8">@Html.DisplayFor(model => model.Project.ProjectName)</dd>
+
+                    <dt class="col-sm-4">@Html.DisplayNameFor(model => model.Project.Client.CompanyName)</dt>
+                    <dd class="col-sm-8">@Html.DisplayFor(model => model.Project.Client.CompanyName)</dd>
+
+                    <dt class="col-sm-4">@Html.DisplayNameFor(model => model.StartDate)</dt>
+                    <dd class="col-sm-8">@Model.StartDate.ToShortDateString()</dd>
+
+                    <dt class="col-sm-4">@Html.DisplayNameFor(model => model.ExpirationDate)</dt>
+                    <dd class="col-sm-8">@Model.ExpirationDate.ToShortDateString()</dd>
+
+                    <dt class="col-sm-4">Contract Duration</dt>
+                    <dd class="col-sm-8">@Model.DurationInDays days</dd>
+
+                    <dt class="col-sm-4">@Html.DisplayNameFor(model => model.Value)</dt>
+                    <dd class="col-sm-8">@Html.DisplayFor(model => model.Value)</dd>
+
+                    <dt class="col-sm-4">@Html.DisplayNameFor(model => model.TermsAndConditions)</dt>
+                    <dd class="col-sm-8">@(Model.TermsAndConditions ? "Accepted" : "Not Accepted")</dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+
+    @* Coluna para a Lista de Funcionários Associados *@
+    <div class="col-md-5">
+        <div class="card shadow-sm">
+            <div class="card-header">
+                <h3>Assigned Employees 🧑‍💻</h3>
+            </div>
+            <div class="card-body">
+                @if (Model.EmployeeContracts != null && Model.EmployeeContracts.Any())
+                {
+                    <ul class="list-group">
+                        @foreach (var employeeContract in Model.EmployeeContracts)
+                        {
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <div>
+                                    <strong>@employeeContract.Employee.Name</strong>
+                                    <small class="d-block text-muted">@employeeContract.Employee.Position</small>
+                                </div>
+                                <span class="badge bg-primary rounded-pill">@employeeContract.DurationInDays days</span>
+                            </li>
+                        }
+                    </ul>
+                }
+                else
+                {
+                    <p class="text-muted">No employees assigned to this contract.</p>
+                }
+            </div>
+        </div>
+    </div>
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+
+<div class="mt-4">
+    <a asp-action="Edit" asp-route-id="@Model?.Id" class="btn btn-primary">Edit</a>
+    <a asp-action="Index" class="btn btn-secondary">Back to List</a>
 </div>

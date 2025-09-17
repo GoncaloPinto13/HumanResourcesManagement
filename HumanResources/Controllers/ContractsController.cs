@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using HumanResources.Data;
 using HumanResources.Models;
+using HumanResources.ViewModels;
 
 
 namespace HumanResources.Controllers
@@ -35,9 +36,13 @@ namespace HumanResources.Controllers
                 return NotFound();
             }
 
+            // ATUALIZE ESTA CONSULTA
             var contract = await _context.Contracts
-         .Include(c => c.Project.Client)
-         .FirstOrDefaultAsync(m => m.Id == id);
+                .Include(c => c.Project.Client)
+                .Include(c => c.EmployeeContracts)  // <-- INCLUIR a tabela de junção
+                    .ThenInclude(ec => ec.Employee) // <-- E DEPOIS INCLUIR o funcionário a partir da junção
+                .FirstOrDefaultAsync(m => m.Id == id);
+
             if (contract == null)
             {
                 return NotFound();
@@ -47,32 +52,77 @@ namespace HumanResources.Controllers
         }
 
         // GET: Contracts/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            ViewData["ClientId"] = new SelectList(_context.Clients, "Id", "CompanyName");
+            // Vamos buscar apenas os funcionários que estão disponíveis.
+            // Para isso, precisamos de carregar os seus contratos para usar a propriedade calculada "IsAvailable".
+            var allEmployees = await _context.Employees
+                                             .Include(e => e.EmployeeContracts)
+                                             .ThenInclude(ec => ec.Contract)
+                                             .ToListAsync();
+
+            var availableEmployees = allEmployees.Where(e => e.IsAvailable);
+
+            // Criamos o ViewModel
+            var viewModel = new CreateContractViewModel
+            {
+                // Populamos a lista de seleção com os funcionários disponíveis
+                AvailableEmployees = new SelectList(availableEmployees, "Id", "Name"),
+                // Inicializamos um novo contrato para o formulário
+                Contract = new Contract()
+            };
+
             ViewData["ProjectId"] = new SelectList(_context.Projects, "Id", "ProjectName");
-            return View();
+            return View(viewModel);
         }
 
         // POST: Contracts/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,ServiceDescription,StartDate,ExpirationDate,Value,TermsAndConditions,ClientId,ProjectId")] Contract contract)
+        public async Task<IActionResult> Create(CreateContractViewModel viewModel)
         {
-            // ADICIONE ESTA LINHA AQUI
-            ModelState.Remove("Project");
+            ModelState.Remove("AvailableEmployees");
+            ModelState.Remove("Contract.Project");
+            ModelState.Remove("Contract.EmployeeContracts");
 
             if (ModelState.IsValid)
             {
-                _context.Add(contract);
-                await _context.SaveChangesAsync();
+                // 1. Salvar o Contrato primeiro para obter um ID
+                _context.Add(viewModel.Contract);
+                await _context.SaveChangesAsync(); // Agora viewModel.Contract.Id tem o ID do novo contrato
+
+                // 2. Associar os funcionários selecionados ao contrato recém-criado
+                if (viewModel.SelectedEmployeeIds != null && viewModel.SelectedEmployeeIds.Any())
+                {
+                    foreach (var employeeId in viewModel.SelectedEmployeeIds)
+                    {
+                        var employeeContract = new EmployeeContract
+                        {
+                            EmployeeId = employeeId,
+                            ContractId = viewModel.Contract.Id,
+                            // Usamos a propriedade calculada do contrato para definir a duração
+                            DurationInDays = viewModel.Contract.DurationInDays
+                        };
+                        _context.EmployeeContracts.Add(employeeContract);
+                    }
+                    // 3. Salvar as novas associações na tabela EmployeeContracts
+                    await _context.SaveChangesAsync();
+                }
+
                 return RedirectToAction(nameof(Index));
             }
-            //ViewData["ClientId"] = new SelectList(_context.Clients, "Id", "CompanyName", contract.ClientId);
-            ViewData["ProjectId"] = new SelectList(_context.Projects, "Id", "ProjectName", contract.ProjectId);
-            return View(contract);
+
+            // Se o modelo for inválido, precisamos de repopular as listas antes de retornar à View
+            var allEmployees = await _context.Employees
+                                             .Include(e => e.EmployeeContracts)
+                                             .ThenInclude(ec => ec.Contract)
+                                             .ToListAsync();
+            var availableEmployees = allEmployees.Where(e => e.IsAvailable);
+
+            viewModel.AvailableEmployees = new SelectList(availableEmployees, "Id", "Name");
+            ViewData["ProjectId"] = new SelectList(_context.Projects, "Id", "ProjectName", viewModel.Contract.ProjectId);
+
+            return View(viewModel);
         }
 
         // GET: Contracts/Edit/5

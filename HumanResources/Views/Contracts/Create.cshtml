@@ -1,76 +1,98 @@
-﻿
-@model HumanResources.Models.Contract
-
-<h1>Create</h1>
-
-
+﻿@model HumanResources.ViewModels.CreateContractViewModel
 
 @{
-    ViewData["Title"] = "Create Contract";
+    ViewData["Title"] = "Create New Contract";
 }
 
-<h1>Create</h1>
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-7">
 
-<h4>Contract</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="card shadow-sm">
+            <div class="card-header">
+                <h3>Create New Contract 📄</h3>
+            </div>
+            <div class="card-body">
+                <form asp-action="Create">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-            <div class="form-group">
-                <label asp-for="ServiceDescription" class="control-label"></label>
-                <input asp-for="ServiceDescription" class="form-control" />
-                <span asp-validation-for="ServiceDescription" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="StartDate" class="control-label"></label>
-                <input asp-for="StartDate" class="form-control" type="date" />
-                <span asp-validation-for="StartDate" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="ExpirationDate" class="control-label"></label>
-                <input asp-for="ExpirationDate" class="form-control" type="date" />
-                <span asp-validation-for="ExpirationDate" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Value" class="control-label"></label>
-                <input asp-for="Value" class="form-control" />
-                <span asp-validation-for="Value" class="text-danger"></span>
-            </div>
-            
-            @* Campo de Funcionário adicionado *@
-@*             <div class="form-group">
-                <label asp-for="EmployeeId" class="control-label"></label>
-                <select asp-for="EmployeeId" class="form-control" asp-items="ViewBag.EmployeeId"></select>
-                 <span asp-validation-for="EmployeeId" class="text-danger"></span>
-            </div>
- *@
-            <div class="form-group">
-                <label asp-for="ProjectId" class="control-label"></label>
-                <select asp-for="ProjectId" class="form-control" asp-items="ViewBag.ProjectId"></select>
-            </div>
-            
-            @* Campo de Termos e Condições alterado para checkbox *@
-            <div class="form-group form-check">
-                <input class="form-check-input" type="checkbox" asp-for="TermsAndConditions" />
-                <label class="form-check-label" asp-for="TermsAndConditions"></label>
-                <span asp-validation-for="TermsAndConditions" class="text-danger"></span>
-            </div>
+                    @* Descrição do Serviço *@
+                    <div class="mb-3">
+                        <label asp-for="Contract.ServiceDescription" class="form-label"></label>
+                        <textarea asp-for="Contract.ServiceDescription" class="form-control" rows="3"></textarea>
+                        <span asp-validation-for="Contract.ServiceDescription" class="text-danger"></span>
+                    </div>
 
-            <div class="form-group mt-3">
-                <input type="submit" value="Create" class="btn btn-primary" />
+                    @* Datas em duas colunas *@
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Contract.StartDate" class="form-label"></label>
+                            <input asp-for="Contract.StartDate" class="form-control" type="date" />
+                            <span asp-validation-for="Contract.StartDate" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Contract.ExpirationDate" class="form-label"></label>
+                            <input asp-for="Contract.ExpirationDate" class="form-control" type="date" />
+                            <span asp-validation-for="Contract.ExpirationDate" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    @* Valor e Projeto *@
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Contract.Value" class="form-label"></label>
+                            <input asp-for="Contract.Value" class="form-control" />
+                            <span asp-validation-for="Contract.Value" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Contract.ProjectId" class="form-label"></label>
+                            <select asp-for="Contract.ProjectId" class="form-select" asp-items="ViewBag.ProjectId">
+                                <option value="">-- Select a Project --</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    @* SELEÇÃO DE FUNCIONÁRIOS MELHORADA *@
+                    <div class="mb-3">
+                        <label asp-for="SelectedEmployeeIds" class="form-label"></label>
+                        @* Damos um ID para o JavaScript poder encontrá-lo *@
+                        <select id="employee-select" asp-for="SelectedEmployeeIds" class="form-control" asp-items="@Model.AvailableEmployees" multiple="multiple"></select>
+                        <span asp-validation-for="SelectedEmployeeIds" class="text-danger"></span>
+                    </div>
+
+
+                    @* Termos e Condições *@
+                    <div class="mb-3 form-check">
+                        <input class="form-check-input" type="checkbox" asp-for="Contract.TermsAndConditions" />
+                        <label class="form-check-label" asp-for="Contract.TermsAndConditions"></label>
+                        <span asp-validation-for="Contract.TermsAndConditions" class="text-danger"></span>
+                    </div>
+
+                    <hr />
+
+                    @* Botões de Ação *@
+                    <div class="d-flex justify-content-end">
+                        <a asp-action="Index" class="btn btn-secondary me-2">Back to List</a>
+                        <input type="submit" value="Create Contract" class="btn btn-primary" />
+                    </div>
+                </form>
             </div>
-        </form>
+        </div>
+
     </div>
-</div>
-
-<div>
-    <a asp-action="Index">Back to List</a>
 </div>
 
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+    <script>
+        // Esta função garante que o código só corre depois da página estar toda carregada
+        $(document).ready(function() {
+            // Aplica a magia do Select2 ao nosso <select> de funcionários
+            $('#employee-select').select2({
+                placeholder: "Search and select employees...",
+                allowClear: true
+            });
+        });
+    </script>
 }
