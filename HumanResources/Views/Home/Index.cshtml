@@ -1,8 +1,85 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Dashboard";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+@* HERO SECTION / CABEÇALHO *@
+<div class="container-fluid bg-light text-dark p-5 rounded-3 mb-4 shadow-sm">
+    <div class="container">
+        <h1 class="display-5 fw-bold">Human Resources Dashboard</h1>
+        <p class="col-md-8 fs-4">Bem-vindo ao portal de gestão. Aceda rapidamente a projetos, funcionários, contratos e clientes a partir dos cartões abaixo.</p>
+    </div>
+</div>
+
+@* CARTÕES DE ACESSO RÁPIDO *@
+<div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4 mb-4">
+
+    <div class="col">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body text-center">
+                <i class="fa-solid fa-briefcase fa-3x text-primary mb-3"></i>
+                <h5 class="card-title">Projetos</h5>
+                <p class="card-text">Visualize e gira todos os projetos ativos e concluídos.</p>
+                <a asp-controller="Projects" asp-action="Index" class="btn btn-primary">Gerir Projetos</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body text-center">
+                <i class="fa-solid fa-users fa-3x text-success mb-3"></i>
+                <h5 class="card-title">Funcionários</h5>
+                <p class="card-text">Consulte a lista de funcionários e adicione novos talentos.</p>
+                <a asp-controller="Employees" asp-action="Index" class="btn btn-success">Gerir Funcionários</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body text-center">
+                <i class="fa-solid fa-file-signature fa-3x text-warning mb-3"></i>
+                <h5 class="card-title">Contratos</h5>
+                <p class="card-text">Administre os contratos de serviço e as suas alocações.</p>
+                <a asp-controller="Contracts" asp-action="Index" class="btn btn-warning">Gerir Contratos</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body text-center">
+                <i class="fa-solid fa-handshake fa-3x text-info mb-3"></i>
+                <h5 class="card-title">Clientes</h5>
+                <p class="card-text">Mantenha a sua carteira de clientes sempre atualizada.</p>
+                <a asp-controller="Clients" asp-action="Index" class="btn btn-info">Gerir Clientes</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@* SECÇÃO DE ESTATÍSTICAS (OPCIONAL) *@
+<div class="mt-5">
+    <h2 class="text-center mb-4">Visão Geral</h2>
+    <div class="row text-center">
+        <div class="col-md-4">
+            <div class="card p-3 shadow-sm">
+                <h3 class="display-4 fw-bold text-primary">12</h3>
+                <p class="lead">Projetos Ativos</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card p-3 shadow-sm">
+                <h3 class="display-4 fw-bold text-success">45</h3>
+                <p class="lead">Funcionários Registados</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card p-3 shadow-sm">
+                <h3 class="display-4 fw-bold text-warning">8</h3>
+                <p class="lead">Contratos a Expirar</p>
+            </div>
+        </div>
+    </div>
 </div>

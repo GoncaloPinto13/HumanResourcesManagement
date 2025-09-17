@@ -1,8 +1,9 @@
+using HumanResources.Areas.Identity.Data;
 using HumanResources.Data;
 using HumanResources.Data.Seeder;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
-using HumanResources.Areas.Identity.Data;
+using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 
 namespace HumanResources
@@ -26,6 +27,13 @@ namespace HumanResources
 
             builder.Services.AddControllersWithViews();
             builder.Services.AddRazorPages();
+
+            builder.Services.AddAuthorization(options =>
+            {
+                options.FallbackPolicy = new AuthorizationPolicyBuilder()
+                    .RequireAuthenticatedUser()
+                    .Build();
+            });
 
             var app = builder.Build();
 
@@ -90,7 +98,7 @@ namespace HumanResources
             using (var scope = app.Services.CreateScope())
             {
                 var services = scope.ServiceProvider;
-                // Chama o método estático da sua classe seeder
+                // Chama o mï¿½todo estï¿½tico da sua classe seeder
                 await HumanResourcesSeeder.Initialize(services);
             }
 
