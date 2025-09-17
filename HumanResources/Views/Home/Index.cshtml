@@ -1,4 +1,6 @@
-﻿@{
+﻿@model HumanResources.ViewModels.DashboardViewModel
+
+@{
     ViewData["Title"] = "Dashboard";
 }
 
@@ -63,22 +65,25 @@
 <div class="mt-5">
     <h2 class="text-center mb-4">Visão Geral</h2>
     <div class="row text-center">
-        <div class="col-md-4">
+        <div class="col-md-4 mb-3">
             <div class="card p-3 shadow-sm">
-                <h3 class="display-4 fw-bold text-primary">12</h3>
+                @* Valor dinâmico vindo do ViewModel *@
+                <h3 class="display-4 fw-bold text-primary">@Model.ActiveProjectsCount</h3>
                 <p class="lead">Projetos Ativos</p>
             </div>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-4 mb-3">
             <div class="card p-3 shadow-sm">
-                <h3 class="display-4 fw-bold text-success">45</h3>
+                @* Valor dinâmico vindo do ViewModel *@
+                <h3 class="display-4 fw-bold text-success">@Model.TotalEmployeesCount</h3>
                 <p class="lead">Funcionários Registados</p>
             </div>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-4 mb-3">
             <div class="card p-3 shadow-sm">
-                <h3 class="display-4 fw-bold text-warning">8</h3>
-                <p class="lead">Contratos a Expirar</p>
+                @* Valor dinâmico vindo do ViewModel *@
+                <h3 class="display-4 fw-bold text-warning">@Model.ExpiringContractsCount</h3>
+                <p class="lead">Contratos a Expirar (30 dias)</p>
             </div>
         </div>
     </div>
