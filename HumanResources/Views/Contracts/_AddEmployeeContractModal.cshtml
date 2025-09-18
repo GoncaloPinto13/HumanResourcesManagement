@@ -1,0 +1,33 @@
+@* Crie este arquivo de partial view *@
+@{
+    var contractId = ViewBag.ContractId;
+    var employeeList = ViewBag.EmployeeId as SelectList;
+}
+
+<div class="modal fade" id="addEmployeeModal" tabindex="-1" aria-labelledby="addEmployeeModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form asp-action="AddEmployeeContract" method="post">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addEmployeeModalLabel">Associar Funcionário</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" name="contractId" value="@contractId" />
+                    <div class="mb-3">
+                        <label for="employeeId" class="form-label">Funcionário</label>
+                        <select id="employeeId" name="employeeId" class="form-select" asp-items="employeeList" required></select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="startDate" class="form-label">Data de Início Real</label>
+                        <input type="date" class="form-control" id="startDate" name="startDate" value="@DateTime.Now.ToString("yyyy-MM-dd")" required />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-success">Associar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

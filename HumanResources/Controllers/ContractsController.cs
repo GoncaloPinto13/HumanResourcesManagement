@@ -226,5 +226,110 @@ namespace HumanResources.Controllers
         {
             return _context.Contracts.Any(e => e.Id == id);
         }
+
+        // GET: Contracts/ManageContracts/id
+        public async Task<IActionResult> ManageContracts(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            // ATUALIZE ESTA CONSULTA
+            var contract = await _context.Contracts
+                .Include(c => c.Project.Client)
+                .Include(c => c.EmployeeContracts)  // <-- INCLUIR a tabela de junção
+                    .ThenInclude(ec => ec.Employee) // <-- E DEPOIS INCLUIR o funcionário a partir da junção
+                .FirstOrDefaultAsync(m => m.Id == id);
+
+            if (contract == null)
+            {
+                return NotFound();
+            }
+
+            return View(contract);
+        }
+
+        // GET: Contracts/InitServices/5
+        public async Task<IActionResult> InitServices(int? id)
+        {
+            if (id == null) return NotFound();
+            var contract = await _context.Contracts.FindAsync(id);
+            if (contract == null) return NotFound();
+            // Lógica para iniciar serviços (exemplo: alterar status, registrar log, etc.)
+            // contract.Status = ContractStatus.Iniciado; // se existir
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(ManageContracts), new { id });
+        }
+
+        // GET: Contracts/PauseServices/5
+        public async Task<IActionResult> PauseServices(int? id)
+        {
+            if (id == null) return NotFound();
+            var contract = await _context.Contracts.FindAsync(id);
+            if (contract == null) return NotFound();
+            // Lógica para pausar serviços
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(ManageContracts), new { id });
+        }
+
+        // POST: Contracts/FinishContract/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> FinishContract(int id, DateTime realStartDate, DateTime realEndDate, decimal realValue)
+        {
+            var contract = await _context.Contracts.FindAsync(id);
+            if (contract == null) return NotFound();
+
+            // Atualize os campos reais do contrato
+            contract.StartDate = realStartDate;
+            contract.ExpirationDate = realEndDate;
+            contract.Value = realValue;
+            // contract.Status = ContractStatus.Finalizado; // se existir
+
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(ManageContracts), new { id });
+        }
+
+        // GET: Contracts/AddEmployeeContract/5
+        public async Task<IActionResult> AddEmployeeContract(int? id)
+        {
+            if (id == null) return NotFound();
+
+            var contract = await _context.Contracts
+                .Include(c => c.Project)
+                .FirstOrDefaultAsync(c => c.Id == id);
+
+            if (contract == null) return NotFound();
+
+            // Carregue funcionários disponíveis
+            var availableEmployees = await _context.Employees
+                .Where(e => e.IsAvailable)
+                .ToListAsync();
+
+            ViewBag.EmployeeId = new SelectList(availableEmployees, "Id", "Name");
+            ViewBag.ContractId = id;
+
+            return PartialView("_AddEmployeeContractModal");
+        }
+
+        // POST: Contracts/AddEmployeeContract
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddEmployeeContract(int contractId, int employeeId, DateTime startDate)
+        {
+            var employeeContract = new EmployeeContract
+            {
+                ContractId = contractId,
+                EmployeeId = employeeId,
+                StartDate = startDate,
+                DurationInDays = 0 // ou calcule conforme necessário
+            };
+
+            _context.EmployeeContracts.Add(employeeContract);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(ManageContracts), new { id = contractId });
+        }
     }
 }

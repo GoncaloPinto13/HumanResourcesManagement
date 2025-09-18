@@ -18,6 +18,12 @@ namespace HumanResources.Models
         [Required(ErrorMessage = "Duration is mandatory.")]
         public int DurationInDays { get; set; }
 
+        // Propriedade para a data de início do contrato
+        [Display(Name = "Start Date")]
+        [Required(ErrorMessage = "Start date is mandatory.")]
+        [DataType(DataType.Date)]
+        public DateTime StartDate { get; set; }
+
         // Propriedades de Navegação (referências às classes completas)
         public Employee Employee { get; set; }
         public Contract Contract { get; set; }
