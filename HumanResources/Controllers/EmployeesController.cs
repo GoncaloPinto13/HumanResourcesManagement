@@ -81,71 +81,72 @@ namespace HumanResources.Controllers
         /// Ação GET para a rota /Employees/Create.
         /// Apresenta o formulário de criação de funcionário, com uma lista de perfis para seleção.
         /// </summary>
-        public async Task<IActionResult> Create()
+         public async Task<IActionResult> Create()
+    {
+        // Prepara o ViewModel com a lista de perfis
+        var viewModel = new CreateEmployeeViewModel
         {
-            // Obtém os perfis relevantes ("Employee" e "Project Manager") da base de dados.
-            var roles = await _roleManager.Roles
-                .Where(r => r.Name == "Employee" || r.Name == "Project Manager")
-                .ToListAsync();
+            RoleList = await GetRolesSelectListAsync()
+        };
 
-            // Prepara o ViewModel para a View.
-            var viewModel = new CreateEmployeeViewModel
-            {
-                // Cria um SelectList para ser usado para gerar a dropdown no formulário.
-                RoleList = new SelectList(roles, "Name", "Name")
+        return View(viewModel);
+    }
+
+    // POST: Employees/Create
+    // Este método é chamado quando você submete o formulário.
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Create(CreateEmployeeViewModel model)
+    {
+        if (ModelState.IsValid)
+        {
+            var user = new HumanResourcesUser 
+            { 
+                UserName = model.Email, 
+                Email = model.Email, 
+                EmailConfirmed = true 
             };
+            var result = await _userManager.CreateAsync(user, model.Password);
 
-            return View(viewModel);
-        }
-
-        /// <summary>
-        /// Ação POST para a rota /Employees/Create.
-        /// Processa a criação de um novo Funcionário e do seu Utilizador associado com o perfil selecionado.
-        /// </summary>
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(CreateEmployeeViewModel model)
-        {
-            if (ModelState.IsValid)
+            if (result.Succeeded)
             {
-                // Passo 1: Criar o objeto User.
-                var user = new HumanResourcesUser { UserName = model.Email, Email = model.Email };
-                var result = await _userManager.CreateAsync(user, model.Password);
+                await _userManager.AddToRoleAsync(user, model.Role);
 
-                if (result.Succeeded)
+                var employee = new Employee
                 {
-                    // Passo 2: Se o utilizador foi criado, atribuir-lhe o perfil (role) selecionado no formulário.
-                    await _userManager.AddToRoleAsync(user, model.Role);
-
-                    // Passo 3: Criar a entidade Employee e associá-la ao utilizador.
-                    var employee = new Employee
-                    {
-                        Name = model.Name,
-                        Position = model.Position,
-                        UserId = user.Id // A ligação é feita aqui.
-                    };
-                    _context.Add(employee);
-                    await _context.SaveChangesAsync();
-                    return RedirectToAction(nameof(Index));
-                }
-
-                // Se a criação do utilizador falhou (ex: email já existe, password não cumpre os requisitos),
-                // adiciona os erros ao ModelState para serem exibidos na view.
-                foreach (var error in result.Errors)
-                {
-                    ModelState.AddModelError(string.Empty, error.Description);
-                }
+                    Name = model.Name,
+                    Position = model.Position,
+                    SpecializationArea= "funcionario",
+                    UserId = user.Id
+                };
+                _context.Add(employee);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
             }
 
-            // Se o modelo for inválido, é necessário recarregar a lista de perfis
-            // antes de devolver a View ao utilizador para correção.
-            var roles = await _roleManager.Roles
-                .Where(r => r.Name == "Employee" || r.Name == "Project Manager")
-                .ToListAsync();
-            model.RoleList = new SelectList(roles, "Name", "Name");
-
-            return View(model);
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError(string.Empty, error.Description);
+            }
         }
+
+        // --- ESTA É A PARTE CRUCIAL ---
+        // Se a validação do modelo falhar, a lista de perfis TEM de ser
+        // preenchida novamente antes de devolver a View.
+        model.RoleList = await GetRolesSelectListAsync();
+        return View(model);
+    }
+
+    // ... (Edit, Delete, etc. permanecem iguais) ...
+
+    // --- NOVO MÉTODO PRIVADO PARA EVITAR REPETIÇÃO DE CÓDIGO ---
+    private async Task<SelectList> GetRolesSelectListAsync()
+    {
+        var roles = await _roleManager.Roles
+            .Where(r => r.Name == "Employee" || r.Name == "Project Manager")
+            .ToListAsync();
+        return new SelectList(roles, "Name", "Name");
+    }
 
         /// <summary>
         /// Ação GET para a rota /Employees/Edit/{id}.

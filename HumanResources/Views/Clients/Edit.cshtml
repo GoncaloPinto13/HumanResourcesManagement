@@ -1,40 +1,46 @@
-﻿@model HumanResources.Models.Client
+﻿@model HumanResources.ViewModels.EditClientViewModel
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Editar Cliente";
 }
 
-<h1>Editar Cliente</h1>
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-7">
+        <div class="card shadow-sm">
+            <div class="card-header">
+                <h3><i class="bi bi-pencil-square"></i> Editar Cliente: @Model.CompanyName</h3>
+            </div>
+            <div class="card-body">
+                <form asp-action="Edit">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <input type="hidden" asp-for="Id" />
 
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="Id" />
-            <div class="form-group">
-                <label asp-for="CompanyName" class="control-label">Nome da empresa</label>
-                <input asp-for="CompanyName" class="form-control" />
-                <span asp-validation-for="CompanyName" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Nif" class="control-label">NIF</label>
-                <input asp-for="Nif" class="form-control" />
-                <span asp-validation-for="Nif" class="text-danger"></span>
-            </div>
+                    <div class="mb-3">
+                        <label asp-for="CompanyName" class="form-label"></label>
+                        <input asp-for="CompanyName" class="form-control" />
+                        <span asp-validation-for="CompanyName" class="text-danger"></span>
+                    </div>
 
-            <br />
-           
-            <div class="form-group">
-                <input type="submit" value="Salvar" class="btn btn-primary" />
-                <a asp-action="Index" class="btn btn-secondary me-2">Voltar à lista</a>
+                    <div class="mb-3">
+                        <label asp-for="Nif" class="form-label"></label>
+                        <input asp-for="Nif" class="form-control" />
+                        <span asp-validation-for="Nif" class="text-danger"></span>
+                    </div>
+
+                    <hr />
+
+                    <div class="d-flex justify-content-end">
+                        <a asp-action="Index" class="btn btn-secondary me-2">Cancelar</a>
+                        <input type="submit" value="Salvar Alterações" class="btn btn-primary" />
+                    </div>
+                </form>
             </div>
-        </form>
+        </div>
     </div>
 </div>
 
-
-
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

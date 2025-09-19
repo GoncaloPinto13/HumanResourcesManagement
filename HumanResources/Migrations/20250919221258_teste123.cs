@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace HumanResources.Migrations
 {
     /// <inheritdoc />
-    public partial class initial : Migration
+    public partial class teste123 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -35,10 +35,9 @@ namespace HumanResources.Migrations
                     Orcamento = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     TempoTotalDespendido = table.Column<int>(type: "int", nullable: false),
                     TotalFuncionarios = table.Column<int>(type: "int", nullable: false),
-                    Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false),
                     CustoReal = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    TempoTotalPrevisto = table.Column<int>(type: "int", nullable: false),
-                    TempoDespendido = table.Column<int>(type: "int", nullable: false)
+                    TempoTotalPrevisto = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {

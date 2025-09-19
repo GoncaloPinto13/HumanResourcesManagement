@@ -14,7 +14,7 @@ namespace HumanResources.Controllers
     /// Controlador responsável pelas páginas principais e estáticas da aplicação, como o Dashboard.
     /// </summary>
     /// 
-    [Authorize]
+ 
     public class HomeController : Controller
     {
         private readonly HumanResourcesContext _context;

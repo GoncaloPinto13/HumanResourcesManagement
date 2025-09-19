@@ -132,45 +132,65 @@ namespace HumanResources.Controllers
         {
             if (id == null) return NotFound();
 
-            var client = await _context.Clients.FindAsync(id); // FindAsync é otimizado para procurar pela chave primária.
-
+            var client = await _context.Clients.FindAsync(id);
             if (client == null) return NotFound();
 
-            return View(client);
+            // Mapear a entidade Client para o EditClientViewModel
+            var viewModel = new EditClientViewModel
+            {
+                Id = client.Id,
+                CompanyName = client.CompanyName,
+                Nif = client.Nif
+            };
+
+            return View(viewModel);
         }
 
-        /// <summary>
-        /// Ação POST para a rota /Clients/Edit/{id}.
-        /// Processa os dados submetidos para atualizar um cliente.
-        /// </summary>
+        // POST: Clients/Edit/5
+        // Este método agora recebe o ViewModel, valida-o, e depois atualiza a entidade na BD.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,CompanyName,Nif,UserId")] Client client)
+        public async Task<IActionResult> Edit(int id, EditClientViewModel viewModel)
         {
-            if (id != client.Id) return NotFound();
+            if (id != viewModel.Id)
+            {
+                return NotFound();
+            }
 
+            // A validação agora funciona corretamente porque o ViewModel só tem os campos do formulário.
             if (ModelState.IsValid)
             {
                 try
                 {
-                    _context.Update(client); // Marca a entidade como modificada.
-                    await _context.SaveChangesAsync(); // Aplica as alterações na base de dados.
+                    // Vai buscar o cliente original e completo à base de dados.
+                    var clientToUpdate = await _context.Clients.FindAsync(id);
+                    if (clientToUpdate == null)
+                    {
+                        return NotFound();
+                    }
+
+                    // Atualiza apenas as propriedades que vieram do formulário.
+                    // O UserId e outros campos são preservados.
+                    clientToUpdate.CompanyName = viewModel.CompanyName;
+                    clientToUpdate.Nif = viewModel.Nif;
+
+                    await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    // Trata o caso em que outro utilizador pode ter modificado o mesmo registo.
-                    if (!ClientExists(client.Id))
+                    if (!ClientExists(viewModel.Id))
                     {
                         return NotFound();
                     }
                     else
                     {
-                        throw; // Re-lança a exceção se for outro tipo de erro de concorrência.
+                        throw;
                     }
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(client);
+            // Se o modelo for inválido, retorna à view com o viewModel para correção.
+            return View(viewModel);
         }
 
         /// <summary>

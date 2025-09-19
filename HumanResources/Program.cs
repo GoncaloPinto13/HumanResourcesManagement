@@ -60,6 +60,44 @@ namespace HumanResources
             var app = builder.Build();
 
 
+            using (var scope = app.Services.CreateScope())
+            {
+                var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+
+                var roles = new[] { "Admin", "Employee", "Cliente", "Project Manager" };
+
+                foreach (var role in roles)
+                {
+                    if (!await roleManager.RoleExistsAsync(role))
+                    {
+                        await roleManager.CreateAsync(new IdentityRole(role));
+                    }
+                }
+
+            }
+            using (var scope = app.Services.CreateScope())
+            {
+                var userManager = scope.ServiceProvider.GetRequiredService<UserManager<HumanResourcesUser>>();
+
+                string email = "email@email.com";
+                string password = "Teste123!";
+
+                if (await userManager.FindByEmailAsync(email) == null)
+                {
+                    var user = new HumanResourcesUser();
+                    user.UserName = email;
+                    user.Email = email;
+
+
+                    await userManager.CreateAsync(user, password);
+
+                    await userManager.AddToRoleAsync(user, "Admin");
+
+                }
+            }
+
+
+
             // --------------------------------------------------------------------
             // 2. CONFIGURAÇÃO DO PIPELINE DE PEDIDOS HTTP (Middleware)
             // Nesta secção, definimos a ordem pela qual os pedidos HTTP

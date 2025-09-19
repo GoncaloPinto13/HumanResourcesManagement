@@ -7,6 +7,8 @@ using System.Collections.Generic;
 // Importa atributos para validação de dados e mapeamento do esquema da base de dados.
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Diagnostics.CodeAnalysis;
+
 // Importa funcionalidades do LINQ para realizar consultas em coleções.
 using System.Linq;
 
@@ -42,7 +44,8 @@ namespace HumanResources.Models
         [StringLength(100, ErrorMessage = "A área de especialização não pode exceder 100 caracteres.")]
         [Column("SpecializationArea")]
         [Display(Name = "Área de Especialização")]
-        public string SpecializationArea { get; set; }
+        [AllowNull]
+        public string SpecializationArea { get; set; } 
 
         // --- Propriedades Calculadas ---
         // Estas propriedades não existem como colunas na base de dados (devido ao [NotMapped]).

@@ -3,6 +3,8 @@
 using Microsoft.AspNetCore.Mvc.Rendering;
 // Importa atributos para validação de dados.
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
 // O namespace agrupa os ViewModels, separando-os dos modelos de dados do domínio.
 namespace HumanResources.ViewModels
@@ -57,6 +59,10 @@ namespace HumanResources.ViewModels
         /// para garantir que nenhum dado vindo do utilizador possa modificá-la num pedido POST.
         /// Ex: [BindNever] public SelectList RoleList { get; set; }
         /// </summary>
+        
+        [BindNever] // <-- ADICIONE ESTE ATRIBUTO
+        [ValidateNever]
         public SelectList RoleList { get; set; }
+        
     }
 }
