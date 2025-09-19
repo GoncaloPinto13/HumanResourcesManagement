@@ -1,7 +1,6 @@
 # 🔐 HumanResourcesManagement
 
-[![.NET Version](https://img.shields.io/badge/.NET-9-blue)](https://dotnet.microsoft.com/)  
-[![Build Status](https://github.com/GoncaloPinto13/HumanResourcesManagement/workflows/CI/badge.svg)](https://github.com/GoncaloPinto13/HumanResourcesManagement/actions)  
+[![.NET Version](https://img.shields.io/badge/.NET-9-blue)](https://dotnet.microsoft.com/)   
 [![License: MIT](https://img.shields.io/badge/License-MIT-green)](LICENSE)
 
 ## ℹ️ Sobre
@@ -15,14 +14,6 @@ HumanResourcesManagement é uma aplicação web construída com **ASP.NET Core R
 - Relatórios de desempenho  
 
 Feita para empresas que querem ter visibilidade completa sobre seus projetos, recursos humanos e contratos em um só lugar.
-
----
-
-## 🖼️ Demonstração / Screenshots
-
-![Tela de Login](docs/screenshots/login.png)  
-![Dashboard de Projetos](docs/screenshots/dashboard.png)  
-*(mais imagens em `docs/screenshots`)*
 
 ---
 
