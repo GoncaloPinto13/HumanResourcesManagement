@@ -1,0 +1,195 @@
+﻿@model HumanResources.Models.Contract
+
+@section Styles {
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
+}
+
+@{
+    ViewData["Title"] = "Contract Details";
+}
+
+<div class="row">
+    @* Coluna para os Detalhes do Contrato *@
+    <div class="col-md-12">
+        <div class="card shadow-sm">
+            <div class="card-header">
+                <h3>Detalhes do Contrato 📄</h3>
+            </div>
+            <div class="card-body">
+                <dl class="row">
+                    <dt class="col-sm-4">Nome do Projeto</dt>
+                    <dd class="col-sm-8">@Html.DisplayFor(model => model.Project.ProjectName)</dd>
+
+                    <dt class="col-sm-4">Descrição do Serviço</dt>
+                    <dd class="col-sm-8">@Html.DisplayFor(model => model.ServiceDescription)</dd>
+
+                    <dt class="col-sm-4">Cliente</dt>
+                    <dd class="col-sm-8">@Html.DisplayFor(model => model.Project.Client.CompanyName)</dd>
+
+                    <dt class="col-sm-4">Data de Início Prevista</dt>
+                    <dd class="col-sm-8">@Model.StartDate.ToShortDateString()</dd>
+
+                    <dt class="col-sm-4">Data de Fim Prevista</dt>
+                    <dd class="col-sm-8">@Model.ExpirationDate.ToShortDateString()</dd>
+
+                    <dt class="col-sm-4">Duração do Contrato</dt>
+                    <dd class="col-sm-8">@Model.DurationInDays Dias</dd>
+
+                    <dt class="col-sm-4">Valor Orçado</dt>
+                    <dd class="col-sm-8">@Html.DisplayFor(model => model.Value) €</dd>
+
+                    <dt class="col-sm-4">Aceite do Termo de Condições Contratuais</dt>
+                    <dd class="col-sm-8">@(Model.TermsAndConditions ? "Aceito" : "Não Aceito")</dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+</div>
+
+@* Coluna para a Lista de Funcionários Associados *@
+<div class="d-flex justify-content-between align-items-center mt-3">
+    <div class="col-md-7">
+        <div class="card shadow-sm">
+            <div class="card-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h3 class="mb-0">Funcionários Associados ao Projeto 🧑‍💻</h3>
+                    @* Altere o botão para abrir o modal *@
+                    <a href="#" class="btn btn-success" title="Associar novo funcionário" data-bs-toggle="modal" data-bs-target="#addEmployeeModal">
+                        <i class="bi bi-person-fill-add"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="card-body">
+                @if (Model.EmployeeContracts != null && Model.EmployeeContracts.Any())
+                {
+                    <ul class="list-group">
+                        @foreach (var employeeContract in Model.EmployeeContracts)
+                        {
+                            <li class="list-group-item">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <strong>@employeeContract.Employee.Name</strong>
+                                        <small class="d-block text-muted">@employeeContract.Employee.Position</small>
+                                    </div>
+                                    <span class="badge bg-primary rounded-pill">@employeeContract.DurationInDays days</span>
+                                    <a asp-action="RemoveEmployeeContract" asp-route-id="@Model?.Id" class="btn btn-danger" title="Desassociar funcionário">
+                                        <i class="bi bi-person-dash-fill"></i>
+                                    </a>
+                                </div>
+                            </li>
+                        }
+                    </ul>
+                }
+                else
+                {
+                    <p class="text-muted">No employees assigned to this contract.</p>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card shadow-sm">
+            <div class="card-header">
+                <div >
+                    <h3 class="mb-0">Ações ⚙️</h3>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row g-2">
+                    <div class="col-6">
+                        <a asp-action="InitServices" class="btn btn-primary w-100">Iniciar Serviços</a>
+                    </div>
+                    <div class="col-6">
+                        <a asp-action="PauseServices" class="btn btn-warning w-100">Pausar Serviços</a>
+                    </div>
+                    <div class="col-6">
+                        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-secondary w-100">Editar Contrato</a>
+                    </div>
+                    <div class="col-6">
+                        <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger w-100">Excluir Contrato</a>
+                    </div>
+                    <div class="col-12">
+                        <button type="button" class="btn btn-success w-100" data-bs-toggle="modal" data-bs-target="#finishContractModal">
+                            Finalizar Contrato
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@* <div class="mt-4">
+    <a asp-action="Edit" asp-route-id="@Model?.Id" class="btn btn-primary">Edit</a>
+    <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+</div> *@
+
+@* Modal de finalização *@
+<div class="modal fade" id="finishContractModal" tabindex="-1" aria-labelledby="finishContractModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form asp-action="FinishContract" method="post">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="finishContractModalLabel">Finalizar Contrato</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" name="id" value="@Model.Id" />
+                    <div class="mb-3">
+                        <label for="realStartDate" class="form-label">Data de Início Real</label>
+                        <input type="date" class="form-control" id="realStartDate" name="realStartDate" value="@Model.StartDate.ToString("yyyy-MM-dd")" required />
+                    </div>
+                    <div class="mb-3">
+                        <label for="realEndDate" class="form-label">Data de Fim Real</label>
+                        <input type="date" class="form-control" id="realEndDate" name="realEndDate" value="@Model.ExpirationDate.ToString("yyyy-MM-dd")" required />
+                    </div>
+                    <div class="mb-3">
+                        <label for="realValue" class="form-label">Valor Real (€)</label>
+                        <input type="text" class="form-control" id="realValue" name="realValue" value="@Model.Value" required />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-success">Finalizar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@* Modal de adicionar funcionários *@
+<div class="modal fade" id="addEmployee" tabindex="-1" aria-labelledby="addEmployeeModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form asp-action="AddEmployee" method="post">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addEmployeeModalLabel">Associar Funcionário</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" name="id" value="@Model.Id" />
+                    <div class="mb-3">
+                        <label for="realStartDate" class="form-label">Data de Início Real</label>
+                        <input type="date" class="form-control" id="realStartDate" name="realStartDate" value="@Model.StartDate.ToString("yyyy-MM-dd")" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="EmployeeId" class="form-label">Funcionário</label>
+                        <select name="EmployeeId" class="form-control" asp-items="ViewBag.EmployeeId"></select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-success">Associar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@await Html.PartialAsync("_AddEmployeeContractModal")
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+}

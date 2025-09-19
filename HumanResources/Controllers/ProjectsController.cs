@@ -160,6 +160,28 @@ namespace HumanResources.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+
+        // GET: Projects/Manage/5
+        public async Task<IActionResult> ManageProjects(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var project = await _context.Projects
+                .Include(p => p.Client)        // Carregar dados do Cliente
+                .Include(p => p.Contracts)     // Carregar a lista de Contratos
+                .FirstOrDefaultAsync(m => m.Id == id);
+
+            if (project == null)
+            {
+                return NotFound();
+            }
+
+            return View(project); // Retorna a nova view Manage.cshtml
+        }
+
         private bool ProjectExists(int id)
         {
             return _context.Projects.Any(e => e.Id == id);

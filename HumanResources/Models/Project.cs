@@ -21,7 +21,7 @@ namespace HumanResources.Models
         public string? Description { get; set; }
 
         [Column("StartDate", TypeName = "date")]
-        public DateTime StartDate { get; set; }
+        public DateTime StartDate { get; set; } = DateTime.Now;
 
         [Column("DueDate", TypeName = "date")]
         public DateTime DueDate { get; set; }

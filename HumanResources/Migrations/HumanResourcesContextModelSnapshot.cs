@@ -219,6 +219,9 @@ namespace HumanResources.Migrations
                     b.Property<int>("EmployeeId")
                         .HasColumnType("int");
 
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime2");
+
                     b.HasKey("EmployeeContractId");
 
                     b.HasIndex("ContractId");

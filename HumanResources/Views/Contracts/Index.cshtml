@@ -4,32 +4,32 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<h1>Lista de Contratos</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create" class="btn btn-success">Novo Contrato</a>
 </p>
 <table class="table">
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.ServiceDescription)
+                Descrição do Serviço
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.StartDate)
+                Data Início
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.ExpirationDate)
+                Data Fim
             </th>
-            <th>
+@*             <th>
                 @Html.DisplayNameFor(model => model.Value)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.TermsAndConditions)
-            </th>
+            </th> *@
             
             <th>
-                @Html.DisplayNameFor(model => model.Project)
+                Projeto Associado
             </th>
             <th></th>
         </tr>
@@ -47,20 +47,21 @@
                 <td>
                     @Html.DisplayFor(modelItem => item.ExpirationDate)
                 </td>
-                <td>
+@*                 <td>
                     @Html.DisplayFor(modelItem => item.Value)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.TermsAndConditions)
                 </td>
-                
+                 *@
                 <td>
                     @Html.DisplayFor(modelItem => item.Project.ProjectName)
                 </td>
                 <td>
-                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+@*                     <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> | *@
+                    <a asp-action="ManageContracts" class="btn btn-primary" asp-route-id="@item.Id">Gerir</a>
+                    @* <a asp-action="Delete" asp-route-id="@item.Id">Delete</a> *@
                 </td>
             </tr>
         }
