@@ -1,0 +1,17 @@
+﻿@model HumanResources.Models.Contract
+
+@{
+    ViewData["Title"] = "Iniciar Serviços";
+}
+
+<h2>Iniciar Serviços</h2>
+
+<form asp-action="InitServices" method="post">
+    <input type="hidden" asp-for="Id" />
+    <div class="form-group">
+        <label for="realStartDate">Data de Início Real</label>
+        <input type="date" class="form-control" id="realStartDate" name="realStartDate" value="@Model.StartDate.ToString("yyyy-MM-dd")" required />
+    </div>
+    <button type="submit" class="btn btn-success mt-3">Iniciar</button>
+    <a asp-action="ManageContracts" asp-route-id="@Model.Id" class="btn btn-secondary mt-3">Cancelar</a>
+</form>

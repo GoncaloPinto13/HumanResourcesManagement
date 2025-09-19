@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace HumanResources.Migrations
 {
     /// <inheritdoc />
-    public partial class Iita : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -257,6 +257,9 @@ namespace HumanResources.Migrations
                     ExpirationDate = table.Column<DateTime>(type: "date", nullable: false),
                     Value = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     TermsAndConditions = table.Column<string>(type: "nvarchar(MAX)", nullable: false),
+                    RealValue = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false),
+                    IsOnStandby = table.Column<bool>(type: "bit", nullable: false),
                     ProjectId = table.Column<int>(type: "int", nullable: false),
                     ClientId = table.Column<int>(type: "int", nullable: true)
                 },

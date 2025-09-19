@@ -3,6 +3,15 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace HumanResources.Models
 {
+    public enum ContractStatus
+    {
+        NotStarted,
+        InProgress,
+        Completed,
+        OnHold,
+        Cancelled
+    }
+
     [Table("Contracts")]
     public class Contract
     {
@@ -26,13 +35,16 @@ namespace HumanResources.Models
 
         [Column("TermsAndConditions", TypeName = "nvarchar(MAX)")]
         public bool TermsAndConditions { get; set; }
+        [Column("RealValue", TypeName = "decimal(18, 2)")]
+        public decimal RealValue { get; set; }
+
+        [Column("Status")]
+        public ContractStatus Status { get; set; }
+
+        [Column("IsOnStandby")]
+        public bool IsOnStandby { get; set; }
 
         // --- Relações ---
-
-        // Relação N-1: Um Contrato pertence a UM Cliente
-        //[Required]
-        //public int ClientId { get; set; }
-        //public Client Client { get; set; }
 
         // Relação 1-1: Um Contrato pertence a UM Projeto
         [Required]
@@ -51,5 +63,7 @@ namespace HumanResources.Models
         {
             return ExpirationDate >= DateTime.Now;
         }
+
+        
     }
 }

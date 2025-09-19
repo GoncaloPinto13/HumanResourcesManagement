@@ -1,6 +1,6 @@
-@* Crie este arquivo de partial view *@
+@model int
+
 @{
-    var contractId = ViewBag.ContractId;
     var employeeList = ViewBag.EmployeeId as SelectList;
 }
 
@@ -13,7 +13,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
                 </div>
                 <div class="modal-body">
-                    <input type="hidden" name="contractId" value="@contractId" />
+                    <input type="hidden" name="contractId" value="@Model" />
                     <div class="mb-3">
                         <label for="employeeId" class="form-label">Funcionário</label>
                         <select id="employeeId" name="employeeId" class="form-select" asp-items="employeeList" required></select>
@@ -21,6 +21,10 @@
                     <div class="mb-3">
                         <label for="startDate" class="form-label">Data de Início Real</label>
                         <input type="date" class="form-control" id="startDate" name="startDate" value="@DateTime.Now.ToString("yyyy-MM-dd")" required />
+                    </div>
+                    <div class="mb-3">
+                        <label for="endDate" class="form-label">Data de Fim do Contrato</label>
+                        <input type="date" class="form-control" id="endDate" name="endDate" required />
                     </div>
                 </div>
                 <div class="modal-footer">

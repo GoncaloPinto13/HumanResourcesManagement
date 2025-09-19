@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HumanResources.Migrations
 {
     [DbContext(typeof(HumanResourcesContext))]
-    [Migration("20250918122451_Iita")]
-    partial class Iita
+    [Migration("20250919160819_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -136,8 +136,16 @@ namespace HumanResources.Migrations
                         .HasColumnType("date")
                         .HasColumnName("ExpirationDate");
 
+                    b.Property<bool>("IsOnStandby")
+                        .HasColumnType("bit")
+                        .HasColumnName("IsOnStandby");
+
                     b.Property<int>("ProjectId")
                         .HasColumnType("int");
+
+                    b.Property<decimal>("RealValue")
+                        .HasColumnType("decimal(18, 2)")
+                        .HasColumnName("RealValue");
 
                     b.Property<string>("ServiceDescription")
                         .IsRequired()
@@ -148,6 +156,10 @@ namespace HumanResources.Migrations
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("date")
                         .HasColumnName("StartDate");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int")
+                        .HasColumnName("Status");
 
                     b.Property<string>("TermsAndConditions")
                         .IsRequired()
