@@ -294,6 +294,19 @@ namespace HumanResources.Controllers
         /// <summary>
         /// Ação POST para iniciar um contrato.
         /// </summary>
+        public async Task<IActionResult> InitServices(int? id)
+        {
+            if (id == null) return NotFound();
+            var contract = await _context.Contracts.FindAsync(id);
+            if (contract == null) return NotFound();
+
+            // Retorna a View InitServices.cshtml
+            return View(contract);
+        }
+
+        /// <summary>
+        /// Ação POST para iniciar um contrato.
+        /// </summary>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> InitServices(int id, DateTime realStartDate)
@@ -305,7 +318,19 @@ namespace HumanResources.Controllers
             contract.Status = ContractStatus.InProgress;
 
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(ManageContracts), new { id = id }); // Redireciona de volta para a gestão
+        }
+        // --- ADICIONADO ---
+        // GET: Contracts/PauseServices/5
+        // Esta ação é chamada quando clica no link e mostra a página de confirmação.
+        public async Task<IActionResult> PauseServices(int? id)
+        {
+            if (id == null) return NotFound();
+            var contract = await _context.Contracts.FindAsync(id);
+            if (contract == null) return NotFound();
+
+            // Retorna a View PauseServices.cshtml
+            return View(contract);
         }
 
         /// <summary>
@@ -318,7 +343,6 @@ namespace HumanResources.Controllers
             var contract = await _context.Contracts.FindAsync(id);
             if (contract == null) return NotFound();
 
-            // Atualiza o estado do contrato com base no valor recebido.
             if (isOnStandby)
             {
                 contract.Status = ContractStatus.OnHold;
@@ -330,7 +354,7 @@ namespace HumanResources.Controllers
 
             contract.IsOnStandby = isOnStandby;
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(ManageContracts), new { id = id }); // Redireciona de volta para a gestão
         }
 
         /// <summary>
