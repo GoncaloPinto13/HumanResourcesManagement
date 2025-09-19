@@ -1,14 +1,15 @@
 ﻿// --- INÍCIO DAS IMPORTAÇÕES (USINGS) ---
+using HumanResources.Data;
+using HumanResources.Models;
+using HumanResources.ViewModels;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using HumanResources.Data;
-using HumanResources.Models;
-using HumanResources.ViewModels;
 
 
 namespace HumanResources.Controllers
@@ -17,6 +18,9 @@ namespace HumanResources.Controllers
     /// Controlador para gerir Contratos. Lida com o ciclo de vida dos contratos
     /// e a alocação de funcionários a projetos.
     /// </summary>
+    /// 
+
+    [Authorize(Roles = "Admin,Gestor de Projeto")] // ADICIONADO: Permite o acesso a Admins E Gestores de Projeto.
     public class ContractsController : Controller
     {
         private readonly HumanResourcesContext _context;

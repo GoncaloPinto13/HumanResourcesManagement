@@ -1,16 +1,17 @@
 ﻿// --- INÍCIO DAS IMPORTAÇÕES (USINGS) ---
+using HumanResources.Areas.Identity.Data; // Importa a classe de utilizador personalizada.
+using HumanResources.Data;
+using HumanResources.Models;
+using HumanResources.ViewModels; // Importa o ViewModel para o formulário de criação.
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity; // Importa os gestores do Identity (UserManager, RoleManager).
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using HumanResources.Data;
-using HumanResources.Models;
-using HumanResources.ViewModels; // Importa o ViewModel para o formulário de criação.
-using Microsoft.AspNetCore.Identity; // Importa os gestores do Identity (UserManager, RoleManager).
-using HumanResources.Areas.Identity.Data; // Importa a classe de utilizador personalizada.
 
 namespace HumanResources.Controllers
 {
@@ -18,6 +19,9 @@ namespace HumanResources.Controllers
     /// Controlador para gerir as operações CRUD da entidade Funcionário (Employee).
     /// Lida com a criação de utilizadores associados com perfis específicos.
     /// </summary>
+    /// 
+
+    [Authorize(Roles = "Admin")] // ADICIONADO: Restringe o acesso a este controller APENAS ao perfil "Admin".
     public class EmployeesController : Controller
     {
         // --- INJEÇÃO DE DEPENDÊNCIAS ---
