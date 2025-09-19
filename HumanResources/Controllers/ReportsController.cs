@@ -1,12 +1,13 @@
 ﻿// --- INÍCIO DAS IMPORTAÇÕES (USINGS) ---
+using HumanResources.Areas.Identity.Data; // Importa a classe de utilizador personalizada.
 using HumanResources.Data;
 using HumanResources.ViewModels;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity; // Importa os serviços do Identity, como o UserManager.
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient; // Importa a classe SqlParameter para passar parâmetros de forma segura para SQL.
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Identity; // Importa os serviços do Identity, como o UserManager.
-using HumanResources.Areas.Identity.Data; // Importa a classe de utilizador personalizada.
-using Microsoft.Data.SqlClient; // Importa a classe SqlParameter para passar parâmetros de forma segura para SQL.
 
 
 namespace HumanResources.Controllers
@@ -14,6 +15,9 @@ namespace HumanResources.Controllers
     /// <summary>
     /// Controlador responsável pela geração e exibição de relatórios.
     /// </summary>
+    /// 
+
+    [Authorize(Roles = "Admin,Gestor de Projeto,Cliente")] // ADICIONADO: Restringe o acesso a estes três perfis.
     public class ReportsController : Controller
     {
         // --- INJEÇÃO DE DEPENDÊNCIAS ---

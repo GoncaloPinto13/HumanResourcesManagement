@@ -1,13 +1,14 @@
 ﻿// --- INÍCIO DAS IMPORTAÇÕES (USINGS) ---
-using System;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using HumanResources.Areas.Identity.Data; // Importa a nossa classe de utilizador personalizada.
 using HumanResources.Data;
 using HumanResources.Models;
 using HumanResources.ViewModels; // Importa o ViewModel usado para o formulário de criação.
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity; // Importa as classes de gestão do Identity, como o UserManager.
-using HumanResources.Areas.Identity.Data; // Importa a nossa classe de utilizador personalizada.
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System;
+using System.Threading.Tasks;
 
 namespace HumanResources.Controllers
 {
@@ -15,6 +16,9 @@ namespace HumanResources.Controllers
     /// Controlador para gerir as operações CRUD da entidade Cliente.
     /// Integra-se com o Identity para criar e gerir os utilizadores associados aos clientes.
     /// </summary>
+    /// 
+
+    [Authorize(Roles = "Admin")] // ADICIONADO: Restringe o acesso a este controller APENAS ao perfil "Admin".
     public class ClientsController : Controller
     {
         // --- INJEÇÃO DE DEPENDÊNCIAS ---

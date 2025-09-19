@@ -1,6 +1,7 @@
 ﻿// --- INÍCIO DAS IMPORTAÇÕES (USINGS) ---
 using HumanResources.Data;
 using HumanResources.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.CodeAnalysis.Elfie.Model.Structures;
@@ -15,6 +16,9 @@ namespace HumanResources.Controllers
     /// <summary>
     /// Controlador para gerir as operações CRUD da entidade Projeto (Project).
     /// </summary>
+    /// 
+
+    [Authorize]
     public class ProjectsController : Controller
     {
         private readonly HumanResourcesContext _context;
@@ -31,6 +35,8 @@ namespace HumanResources.Controllers
         /// Ação GET para a rota /Projects.
         /// Lista todos os projetos, incluindo o nome do cliente associado.
         /// </summary>
+        /// 
+        [Authorize(Roles = "Admin,Gestor de Projeto,Employee")]
         public async Task<IActionResult> Index()
         {
             // O .Include(p => p.Client) instrui o EF Core a carregar (Eager Loading)
@@ -61,6 +67,8 @@ namespace HumanResources.Controllers
         /// Ação GET para a rota /Projects/Create.
         /// Apresenta o formulário para criar um novo projeto.
         /// </summary>
+        /// 
+        [Authorize(Roles = "Admin,Gestor de Projeto")]
         public IActionResult Create()
         {
             // Popula um item no ViewData com uma SelectList de todos os clientes.
@@ -78,6 +86,9 @@ namespace HumanResources.Controllers
         [ValidateAntiForgeryToken]
         // O atributo [Bind] é uma medida de segurança que especifica explicitamente quais propriedades
         // do modelo 'Project' podem ser preenchidas a partir do formulário. Isto previne ataques de "over-posting".
+
+
+        [Authorize(Roles = "Admin,Gestor de Projeto")]
         public async Task<IActionResult> Create([Bind("Id,ProjectName,Description,StartDate,DueDate,Budget,ClientId")] Project project)
         {
             if (ModelState.IsValid)
@@ -96,6 +107,8 @@ namespace HumanResources.Controllers
         /// Ação GET para a rota /Projects/Edit/{id}.
         /// Apresenta o formulário para editar um projeto existente.
         /// </summary>
+        /// 
+        [Authorize(Roles = "Admin,Gestor de Projeto")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null) return NotFound();
@@ -115,6 +128,8 @@ namespace HumanResources.Controllers
         /// </summary>
         [HttpPost]
         [ValidateAntiForgeryToken]
+
+        [Authorize(Roles = "Admin,Gestor de Projeto")]
         public async Task<IActionResult> Edit(int id, [Bind("Id,ProjectName,Description,StartDate,DueDate,Budget,ClientId")] Project project)
         {
             if (id != project.Id) return NotFound();
@@ -165,6 +180,8 @@ namespace HumanResources.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+
+        [Authorize(Roles = "Admin,Gestor de Projeto")]
         public async Task<IActionResult> CompleteProject(int id)
         {
             var project = await _context.Projects.FindAsync(id);
@@ -187,6 +204,8 @@ namespace HumanResources.Controllers
         /// Ação GET para a rota /Projects/Delete/{id}.
         /// Apresenta uma página de confirmação para apagar um projeto.
         /// </summary>
+        /// 
+        [Authorize(Roles = "Admin,Gestor de Projeto")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null) return NotFound();

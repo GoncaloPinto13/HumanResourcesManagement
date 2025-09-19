@@ -2,6 +2,7 @@
 using HumanResources.Data;
 using HumanResources.Models;
 using HumanResources.ViewModels; // Importa os ViewModels, como o DashboardViewModel.
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore; // Necessário para métodos de consulta assíncronos como CountAsync.
 using System.Diagnostics;
@@ -12,6 +13,8 @@ namespace HumanResources.Controllers
     /// <summary>
     /// Controlador responsável pelas páginas principais e estáticas da aplicação, como o Dashboard.
     /// </summary>
+    /// 
+    [Authorize]
     public class HomeController : Controller
     {
         private readonly HumanResourcesContext _context;
