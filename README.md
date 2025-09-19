@@ -63,18 +63,6 @@ Feita para empresas que querem ter visibilidade completa sobre seus projetos, re
 
 ---
 
-## 🧪 Testes
-
-*(Se aplicável)*
-
-- Localização dos testes: `Tests/`  
-- Comando para rodar testes via CLI:  
-  ```bash
-  dotnet test
-  ```
-
----
-
 ## 📅 Roadmap
 
 - [ ] Autenticações externas (Google, Microsoft)  
