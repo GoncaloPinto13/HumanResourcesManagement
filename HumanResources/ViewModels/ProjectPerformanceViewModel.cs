@@ -40,13 +40,7 @@ namespace HumanResources.ViewModels
         [DisplayFormat(DataFormatString = "{0:C}")]
         public decimal Orcamento { get; set; }
 
-
-        [Display(Name = "Custo Real (€)")]
-        [DisplayFormat(DataFormatString = "{0:C}")]
-        public decimal CustoReal { get; set; }
-
-        [Display(Name = "Tempo Total Previsto (dias)")]
-        public int TempoTotalPrevisto { get; set; }
+       
 
         [Display(Name = "Tempo Total Despendido (dias)")]
         public int TempoTotalDespendido { get; set; }

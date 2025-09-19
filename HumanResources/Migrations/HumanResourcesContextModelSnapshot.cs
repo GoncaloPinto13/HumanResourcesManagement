@@ -96,8 +96,7 @@ namespace HumanResources.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("ClientId");
+                        .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
@@ -281,9 +280,8 @@ namespace HumanResources.Migrations
                         .HasColumnType("nvarchar(150)")
                         .HasColumnName("ProjectName");
 
-                    b.Property<string>("ProjectStatus")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(MAX)")
+                    b.Property<int>("ProjectStatus")
+                        .HasColumnType("int")
                         .HasColumnName("Status");
 
                     b.Property<DateTime>("StartDate")
@@ -301,6 +299,10 @@ namespace HumanResources.Migrations
 
             modelBuilder.Entity("HumanResources.ViewModels.ProjectPerformanceViewModel", b =>
                 {
+                    b.Property<string>("Cliente")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<decimal>("CustoReal")
                         .HasColumnType("decimal(18,2)");
 
@@ -314,10 +316,20 @@ namespace HumanResources.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("TempoDespendido")
                         .HasColumnType("int");
 
+                    b.Property<int>("TempoTotalDespendido")
+                        .HasColumnType("int");
+
                     b.Property<int>("TempoTotalPrevisto")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TotalFuncionarios")
                         .HasColumnType("int");
 
                     b.ToTable("ProjectPerformanceReport");
