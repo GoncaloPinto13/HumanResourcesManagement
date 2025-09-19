@@ -6,11 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace HumanResources.Migrations
 {
     /// <inheritdoc />
-<<<<<<<< HEAD:HumanResources/Migrations/20250919165825_Teste123.cs
     public partial class Teste123 : Migration
-========
-    public partial class teste123 : Migration
->>>>>>>> 21969782d42aef2ea33c4a573ad69494cbc29e1e:HumanResources/Migrations/20250919162836_teste123.cs
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -162,7 +158,7 @@ namespace HumanResources.Migrations
                 name: "Clients",
                 columns: table => new
                 {
-                    ClientId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     CompanyName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     Nif = table.Column<string>(type: "nvarchar(9)", maxLength: 9, nullable: false),
@@ -170,7 +166,7 @@ namespace HumanResources.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Clients", x => x.ClientId);
+                    table.PrimaryKey("PK_Clients", x => x.Id);
                     table.ForeignKey(
                         name: "FK_Clients_AspNetUsers_UserId",
                         column: x => x.UserId,
@@ -212,7 +208,7 @@ namespace HumanResources.Migrations
                     StartDate = table.Column<DateTime>(type: "date", nullable: false),
                     DueDate = table.Column<DateTime>(type: "date", nullable: false),
                     Budget = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    Status = table.Column<string>(type: "nvarchar(MAX)", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false),
                     ClientId = table.Column<int>(type: "int", nullable: false),
                     EmployeeId = table.Column<int>(type: "int", nullable: true)
                 },
@@ -223,7 +219,7 @@ namespace HumanResources.Migrations
                         name: "FK_Projects_Clients_ClientId",
                         column: x => x.ClientId,
                         principalTable: "Clients",
-                        principalColumn: "ClientId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Projects_Employees_EmployeeId",
@@ -257,7 +253,7 @@ namespace HumanResources.Migrations
                         name: "FK_Contracts_Clients_ClientId",
                         column: x => x.ClientId,
                         principalTable: "Clients",
-                        principalColumn: "ClientId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Contracts_Projects_ProjectId",
@@ -408,7 +404,7 @@ namespace HumanResources.Migrations
                 table: "AspNetUsers",
                 column: "ClientId",
                 principalTable: "Clients",
-                principalColumn: "ClientId",
+                principalColumn: "Id",
                 onDelete: ReferentialAction.Restrict);
         }
 
