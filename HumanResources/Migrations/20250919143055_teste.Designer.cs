@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HumanResources.Migrations
 {
     [DbContext(typeof(HumanResourcesContext))]
-    [Migration("20250917165452_teste")]
+    [Migration("20250919143055_teste")]
     partial class teste
     {
         /// <inheritdoc />
@@ -31,6 +31,9 @@ namespace HumanResources.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("AccessFailedCount")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ClientId")
                         .HasColumnType("int");
 
                     b.Property<string>("ConcurrencyStamp")
@@ -78,6 +81,8 @@ namespace HumanResources.Migrations
                         .HasColumnType("nvarchar(256)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ClientId");
 
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
@@ -441,6 +446,16 @@ namespace HumanResources.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens", (string)null);
+                });
+
+            modelBuilder.Entity("HumanResources.Areas.Identity.Data.HumanResourcesUser", b =>
+                {
+                    b.HasOne("HumanResources.Models.Client", "Client")
+                        .WithMany()
+                        .HasForeignKey("ClientId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Client");
                 });
 
             modelBuilder.Entity("HumanResources.Models.Client", b =>

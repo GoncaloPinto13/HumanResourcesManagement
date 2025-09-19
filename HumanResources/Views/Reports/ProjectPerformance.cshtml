@@ -6,18 +6,32 @@
 
 <h1>@ViewData["Title"]</h1>
 <p>Este relatório consolida o desempenho financeiro e temporal de cada projeto.</p>
+
+@* FORMULÁRIO DE FILTRO ADICIONADO *@
+<form method="get" asp-action="ProjectPerformance">
+    <div class="row mb-3 align-items-end">
+        <div class="col-md-5">
+            <label class="form-label">Pesquisar por nome do projeto</label>
+            <input type="text" name="searchString" class="form-control" value="@ViewData["CurrentFilter"]" />
+        </div>
+        <div class="col-md-2">
+            <input type="submit" value="Filtrar" class="btn btn-primary" />
+        </div>
+    </div>
+</form>
 <hr />
 
 <div class="table-responsive">
-    <table class="table table-striped table-hover">
+    <table class="table table-striped table-hover align-middle">
         <thead class="table-dark">
             <tr>
                 <th>@Html.DisplayNameFor(model => model.ProjectName)</th>
                 <th>@Html.DisplayNameFor(model => model.Orcamento)</th>
                 <th>@Html.DisplayNameFor(model => model.CustoReal)</th>
                 <th>@Html.DisplayNameFor(model => model.Desvio)</th>
-                <th>@Html.DisplayNameFor(model => model.TempoTotalPrevisto)</th>
-                <th>@Html.DisplayNameFor(model => model.TempoDespendido)</th>
+                @* COLUNAS NOVAS/ATUALIZADAS *@
+                <th style="min-width: 150px;">@Html.DisplayNameFor(model => model.PercentagemCusto)</th>
+                <th style="min-width: 150px;">@Html.DisplayNameFor(model => model.PercentagemTempo)</th>
             </tr>
         </thead>
         <tbody>
@@ -30,27 +44,41 @@
                         <td>@Html.DisplayFor(modelItem => item.Orcamento)</td>
                         <td>@Html.DisplayFor(modelItem => item.CustoReal)</td>
                         <td>
-                            @if (item.Desvio > 0)
-                            {
-                                <span class="text-danger fw-bold">@item.Desvio.ToString("C")</span>
+                            @{
+                                var desvioClass = item.Desvio > 0 ? "text-danger" : "text-success";
                             }
-                            else
-                            {
-                                <span class="text-success fw-bold">@item.Desvio.ToString("C")</span>
-                            }
+                            <span class="@desvioClass fw-bold">@item.Desvio.ToString("C")</span>
                         </td>
-                        <td>@Html.DisplayFor(modelItem => item.TempoTotalPrevisto)</td>
-                        <td>@Html.DisplayFor(modelItem => item.TempoDespendido)</td>
+                        @* CÉLULAS NOVAS COM BARRAS DE PROGRESSO *@
+                        <td>
+                            <div class="progress" title="@item.PercentagemCusto%">
+                                @{
+                                    var custoClass = item.PercentagemCusto > 100 ? "bg-danger" : "bg-primary";
+                                }
+                                <div class="progress-bar @custoClass" role="progressbar" style="width: @(item.PercentagemCusto > 100 ? 100 : item.PercentagemCusto)%" aria-valuenow="@item.PercentagemCusto" aria-valuemin="0" aria-valuemax="100">
+                                    <small>@item.PercentagemCusto%</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="progress" title="@item.PercentagemTempo%">
+                                @{
+                                    var tempoClass = item.PercentagemTempo > 100 ? "bg-danger" : (item.PercentagemTempo > 85 ? "bg-warning" : "bg-success");
+                                }
+                                <div class="progress-bar @tempoClass" role="progressbar" style="width: @(item.PercentagemTempo > 100 ? 100 : item.PercentagemTempo)%" aria-valuenow="@item.PercentagemTempo" aria-valuemin="0" aria-valuemax="100">
+                                    <small>@item.PercentagemTempo%</small>
+                                </div>
+                            </div>
+                        </td>
                     </tr>
                 }
             }
             else
             {
                 <tr>
-                    <td colspan="6" class="text-center">Não foram encontrados dados para apresentar. Execute o Seeder para popular a base de dados.</td>
+                    <td colspan="6" class="text-center">Não foram encontrados dados para o filtro atual.</td>
                 </tr>
             }
         </tbody>
     </table>
 </div>
-
