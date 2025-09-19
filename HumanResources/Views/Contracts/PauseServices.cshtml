@@ -1,0 +1,17 @@
+﻿@model HumanResources.Models.Contract
+
+@{
+    ViewData["Title"] = "Pausar Serviços";
+}
+
+<h2>Pausar Serviços</h2>
+
+<form asp-action="PauseServices" method="post">
+    <input type="hidden" asp-for="Id" />
+    <div class="form-group form-check">
+        <input type="checkbox" class="form-check-input" id="isOnStandby" name="isOnStandby" value="true" @(Model.IsOnStandby ? "checked" : "") />
+        <label class="form-check-label" for="isOnStandby">Colocar contrato em standby</label>
+    </div>
+    <button type="submit" class="btn btn-warning mt-3">Atualizar</button>
+    <a asp-action="ManageContracts" asp-route-id="@Model.Id" class="btn btn-secondary mt-3">Cancelar</a>
+</form>
