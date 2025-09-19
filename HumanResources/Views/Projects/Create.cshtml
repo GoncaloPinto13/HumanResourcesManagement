@@ -1,60 +1,108 @@
 ﻿@model HumanResources.Models.Project
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Criar Novo Projeto";
 }
 
-<h1>Create</h1>
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-7">
 
-<h4>Project</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="ProjectName" class="control-label"></label>
-                <input asp-for="ProjectName" class="form-control" />
-                <span asp-validation-for="ProjectName" class="text-danger"></span>
+        <div class="card shadow-sm">
+            <div class="card-header">
+                <h3><i class="bi bi-briefcase-fill"></i> Criar Novo Projeto</h3>
             </div>
-            <div class="form-group">
-                <label asp-for="Description" class="control-label"></label>
-                <input asp-for="Description" class="form-control" />
-                <span asp-validation-for="Description" class="text-danger"></span>
+            <div class="card-body">
+                <form asp-action="Create">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                    @* Nome do Projeto *@
+                    <div class="mb-3">
+                        <label asp-for="ProjectName" class="form-label"></label>
+                        <input asp-for="ProjectName" class="form-control" />
+                        <span asp-validation-for="ProjectName" class="text-danger"></span>
+                    </div>
+
+                    @* Descrição do Projeto *@
+                    <div class="mb-3">
+                        <label asp-for="Description" class="form-label"></label>
+                        <textarea asp-for="Description" class="form-control" rows="4"></textarea>
+                        <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
+
+                    @* Datas em duas colunas *@
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="StartDate" class="form-label"></label>
+                            @* PASSO 1: Adicionar um ID ao campo de data de início *@
+                            <input asp-for="StartDate" id="startDate" class="form-control" type="date" />
+                            <span asp-validation-for="StartDate" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="DueDate" class="form-label"></label>
+                            @* PASSO 1: Adicionar um ID ao campo de data de fim *@
+                            <input asp-for="DueDate" id="dueDate" class="form-control" type="date" />
+                            <span asp-validation-for="DueDate" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    @* Orçamento e Cliente *@
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Budget" class="form-label"></label>
+                            <input asp-for="Budget" class="form-control" />
+                            <span asp-validation-for="Budget" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="ClientId" class="form-label"></label>
+                            <select asp-for="ClientId" class="form-select" asp-items="ViewBag.ClientId">
+                                <option value="">-- Selecione um Cliente --</option>
+                            </select>
+                            <span asp-validation-for="ClientId" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <hr />
+
+                    @* Botões de Ação *@
+                    <div class="d-flex justify-content-end">
+                        <a asp-action="Index" class="btn btn-secondary me-2">Voltar à Lista</a>
+                        <input type="submit" value="Criar Projeto" class="btn btn-primary" />
+                    </div>
+                </form>
             </div>
-            <div class="form-group">
-                <label asp-for="StartDate" class="control-label"></label>
-                <input asp-for="StartDate" class="form-control" />
-                <span asp-validation-for="StartDate" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="DueDate" class="control-label"></label>
-                <input asp-for="DueDate" class="form-control" />
-                <span asp-validation-for="DueDate" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Budget" class="control-label"></label>
-                <input asp-for="Budget" class="form-control" />
-                <span asp-validation-for="Budget" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="ClientId" class="control-label"></label>
-                <select asp-for="ClientId" class="form-control" asp-items="ViewBag.ClientId"></select>
-                <span asp-validation-for="ClientId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+        </div>
+
     </div>
-</div>
-
-<div>
-    <a asp-action="Index">Back to List</a>
 </div>
 
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+
+    @* PASSO 2: Adicionar o script no final da página *@
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const startDateInput = document.getElementById('startDate');
+            const dueDateInput = document.getElementById('dueDate');
+
+            function updateDueDateMin() {
+                const startDateValue = startDateInput.value;
+                // Define o atributo 'min' do campo da data de fim
+                dueDateInput.min = startDateValue;
+
+                // Se a data de fim atual for anterior à nova data de início,
+                // define a data de fim igual à de início para evitar uma seleção inválida.
+                if (dueDateInput.value < startDateValue) {
+                    dueDateInput.value = startDateValue;
+                }
+            }
+
+            // Executa a função quando o valor da data de início muda
+            startDateInput.addEventListener('change', updateDueDateMin);
+
+            // Executa a função uma vez no carregamento da página para definir a restrição inicial
+            updateDueDateMin();
+        });
+    </script>
 }

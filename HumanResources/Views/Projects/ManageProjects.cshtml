@@ -1,0 +1,135 @@
+﻿@model HumanResources.Models.Project
+
+@{
+    ViewData["Title"] = "Gerir Projeto";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1><i class="bi bi-briefcase-fill"></i> Gerir Projeto: @Model.ProjectName</h1>
+    <a asp-action="Index" class="btn btn-secondary">
+        <i class="bi bi-arrow-left-circle"></i> Voltar à Lista
+    </a>
+</div>
+
+<div class="row">
+    @* Coluna da Esquerda: Detalhes e Lista de Contratos *@
+    <div class="col-lg-8">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header">
+                <h3 class="mb-0">📄 Detalhes do Projeto</h3>
+            </div>
+            <div class="card-body">
+                @* Conteúdo adaptado da sua view de detalhes do projeto *@
+                <div class="row">
+                    <div class="col-md-12 mb-3">
+                        <label class="fw-bold text-muted">@Html.DisplayNameFor(model => model.Description)</label>
+                        <p class="fs-5">@Html.DisplayFor(model => model.Description)</p>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="fw-bold text-muted">@Html.DisplayNameFor(model => model.Client)</label>
+                        <p>@Html.DisplayFor(model => model.Client.CompanyName)</p>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="fw-bold text-muted">@Html.DisplayNameFor(model => model.ProjectStatus)</label>
+                        <p><span class="badge bg-info">@Html.DisplayFor(model => model.ProjectStatus)</span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card shadow-sm">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h3 class="mb-0">📜 Contratos Associados</h3>
+                <a asp-controller="Contracts" asp-action="Create" asp-route-projectId="@Model.Id" class="btn btn-success" title="Criar Novo Contrato">
+                    <i class="bi bi-plus-circle-fill"></i>
+                </a>
+            </div>
+            <div class="card-body">
+                @if (Model.Contracts != null && Model.Contracts.Any())
+                {
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Descrição do Serviço</th>
+                                <th>Valor</th>
+                                <th>Estado</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var contract in Model.Contracts)
+                            {
+                                <tr>
+                                    <td>@contract.ServiceDescription</td>
+                                    <td>@contract.Value.ToString("C")</td>
+                                    <td>
+                                        @if (contract.IsActive())
+                                        {
+                                            <span class="badge bg-success">Ativo</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary">Expirado</span>
+                                        }
+                                    </td>
+                                    <td class="text-end">
+                                        <a asp-controller="Contracts" asp-action="Details" asp-route-id="@contract.Id" class="btn btn-sm btn-outline-primary">Gerir Contrato</a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+                else
+                {
+                    <p class="text-muted">Ainda não existem contratos associados a este projeto.</p>
+                }
+            </div>
+        </div>
+    </div>
+
+    @* Coluna da Direita: Ações e Orçamento *@
+    <div class="col-lg-4">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header">
+                <h3 class="mb-0">⚙️ Ações</h3>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary"><i class="bi bi-pencil-square"></i> Editar Projeto</a>
+                    <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger"><i class="bi bi-trash-fill"></i> Apagar Projeto</a>
+                    <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#completeProjectModal">
+                        <i class="bi bi-check-circle-fill"></i> Marcar como Concluído
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="card shadow-sm">
+            <div class="card-header">
+                <h3 class="mb-0">💰 Orçamento</h3>
+            </div>
+            <div class="card-body text-center">
+                <h4 class="fw-bold text-muted">Orçamento Total</h4>
+                <p class="display-5 fw-bold text-success">@Model.Budget.ToString("C")</p>
+                <hr>
+                <div class="row">
+                    <div class="col-6">
+                        <label class="fw-bold text-muted">Data de Início</label>
+                        <p>@Model.StartDate.ToShortDateString()</p>
+                    </div>
+                    <div class="col-6">
+                        <label class="fw-bold text-muted">Data de Fim</label>
+                        <p>@Model.DueDate.ToShortDateString()</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@* Adicione aqui os modais que forem necessários, por exemplo, um modal para "Marcar como Concluído" *@
