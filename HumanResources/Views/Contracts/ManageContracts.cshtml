@@ -41,6 +41,10 @@
 
                     <dt class="col-sm-4">Aceite do Termo de Condições Contratuais</dt>
                     <dd class="col-sm-8">@(Model.TermsAndConditions ? "Aceito" : "Não Aceito")</dd>
+
+                    <dt class="col-sm-4">Em Espera?</dt>
+                    <dd class="col-sm-8">@((Model.IsOnStandby) ? "Sim" : "Não")</dd>
+
                 </dl>
             </div>
         </div>
@@ -53,7 +57,7 @@
         <div class="card shadow-sm">
             <div class="card-header">
                 <div class="d-flex justify-content-between align-items-center">
-                    <h3 class="mb-0">Funcionários Associados ao Projeto 🧑‍💻</h3>
+                    <h3 class="mb-0">Funcionários Associados ao Contrato 🧑‍💻</h3>
                     @* Altere o botão para abrir o modal *@
                     <a href="#" class="btn btn-success" title="Associar novo funcionário" data-bs-toggle="modal" data-bs-target="#addEmployeeModal">
                         <i class="bi bi-person-fill-add"></i>
@@ -73,9 +77,13 @@
                                         <small class="d-block text-muted">@employeeContract.Employee.Position</small>
                                     </div>
                                     <span class="badge bg-primary rounded-pill">@employeeContract.DurationInDays days</span>
-                                    <a asp-action="RemoveEmployeeContract" asp-route-id="@Model?.Id" class="btn btn-danger" title="Desassociar funcionário">
-                                        <i class="bi bi-person-dash-fill"></i>
-                                    </a>
+                                    <form asp-action="RemoveEmployeeContract" method="post" style="display:inline;">
+                                        <input type="hidden" name="employeeContractId" value="@employeeContract.EmployeeContractId" />
+                                        <input type="hidden" name="contractId" value="@Model.Id" />
+                                        <button type="submit" class="btn btn-danger" title="Desassociar funcionário" onclick="return confirm('Tem certeza que deseja desassociar este funcionário?');">
+                                            <i class="bi bi-person-dash-fill"></i>
+                                        </button>
+                                    </form>
                                 </div>
                             </li>
                         }
@@ -99,10 +107,10 @@
             <div class="card-body">
                 <div class="row g-2">
                     <div class="col-6">
-                        <a asp-action="InitServices" class="btn btn-primary w-100">Iniciar Serviços</a>
+                        <a asp-action="InitServices" asp-route-id="@Model.Id" class="btn btn-primary w-100">Iniciar Serviços</a>
                     </div>
                     <div class="col-6">
-                        <a asp-action="PauseServices" class="btn btn-warning w-100">Pausar Serviços</a>
+                        <a asp-action="PauseServices" asp-route-id="@Model.Id" class="btn btn-warning w-100">Pausar Serviços</a>
                     </div>
                     <div class="col-6">
                         <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-secondary w-100">Editar Contrato</a>
@@ -110,11 +118,18 @@
                     <div class="col-6">
                         <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger w-100">Excluir Contrato</a>
                     </div>
-                    <div class="col-12">
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <button type="button" class="btn btn-warning w-100" data-bs-toggle="modal" data-bs-target="#finishContractModal">
+                                Finalizar Contrato
+                            </button>
+                        </div>
+                    </div>
+                   @*  <div class="col-12">
                         <button type="button" class="btn btn-success w-100" data-bs-toggle="modal" data-bs-target="#finishContractModal">
                             Finalizar Contrato
                         </button>
-                    </div>
+                    </div> *@
                 </div>
             </div>
         </div>
@@ -127,56 +142,28 @@
 </div> *@
 
 @* Modal de finalização *@
-<div class="modal fade" id="finishContractModal" tabindex="-1" aria-labelledby="finishContractModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <form asp-action="FinishContract" method="post">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="finishContractModalLabel">Finalizar Contrato</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
-                </div>
-                <div class="modal-body">
-                    <input type="hidden" name="id" value="@Model.Id" />
-                    <div class="mb-3">
-                        <label for="realStartDate" class="form-label">Data de Início Real</label>
-                        <input type="date" class="form-control" id="realStartDate" name="realStartDate" value="@Model.StartDate.ToString("yyyy-MM-dd")" required />
-                    </div>
-                    <div class="mb-3">
-                        <label for="realEndDate" class="form-label">Data de Fim Real</label>
-                        <input type="date" class="form-control" id="realEndDate" name="realEndDate" value="@Model.ExpirationDate.ToString("yyyy-MM-dd")" required />
-                    </div>
-                    <div class="mb-3">
-                        <label for="realValue" class="form-label">Valor Real (€)</label>
-                        <input type="text" class="form-control" id="realValue" name="realValue" value="@Model.Value" required />
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-success">Finalizar</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
 @* Modal de adicionar funcionários *@
 <div class="modal fade" id="addEmployee" tabindex="-1" aria-labelledby="addEmployeeModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <form asp-action="AddEmployee" method="post">
+            <form asp-action="AddEmployeeContract" method="post">
                 <div class="modal-header">
                     <h5 class="modal-title" id="addEmployeeModalLabel">Associar Funcionário</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
                 </div>
                 <div class="modal-body">
-                    <input type="hidden" name="id" value="@Model.Id" />
+                    <input type="hidden" name="contractId" value="@Model.Id" />
                     <div class="mb-3">
-                        <label for="realStartDate" class="form-label">Data de Início Real</label>
-                        <input type="date" class="form-control" id="realStartDate" name="realStartDate" value="@Model.StartDate.ToString("yyyy-MM-dd")" required />
+                        <label for="startDate" class="form-label">Data de Início</label>
+                        <input type="date" class="form-control" id="startDate" name="startDate" required />
+                    </div>
+                    <div class="mb-3">
+                        <label for="endDate" class="form-label">Data de Fim</label>
+                        <input type="date" class="form-control" id="endDate" name="endDate" required />
                     </div>
                     <div class="form-group">
-                        <label for="EmployeeId" class="form-label">Funcionário</label>
-                        <select name="EmployeeId" class="form-control" asp-items="ViewBag.EmployeeId"></select>
+                        <label for="employeeId" class="form-label">Funcionário</label>
+                        <select name="employeeId" id="employeeId" class="form-control" asp-items="ViewBag.EmployeeId" required></select>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -188,7 +175,43 @@
     </div>
 </div>
 
-@await Html.PartialAsync("_AddEmployeeContractModal")
+@* Modal de adicionar funcionários *@
+<div class="modal fade" id="addEmployee" tabindex="-1" aria-labelledby="addEmployeeModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form asp-action="AddEmployeeContract" method="post">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addEmployeeModalLabel">Associar Funcionário</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" name="contractId" value="@Model.Id" />
+                    <div class="mb-3">
+                        <label for="startDate" class="form-label">Data de Início</label>
+                        <input type="date" class="form-control" id="startDate" name="startDate" required />
+                    </div>
+                    <div class="mb-3">
+                        <label for="endDate" class="form-label">Data de Fim</label>
+                        <input type="date" class="form-control" id="endDate" name="endDate" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="employeeId" class="form-label">Funcionário</label>
+                        <select name="employeeId" id="employeeId" class="form-control" asp-items="ViewBag.EmployeeId" required></select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-success">Associar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@* @await Html.PartialAsync("_AddEmployeeContractModal") *@
+@await Html.PartialAsync("_AddEmployeeContractModal", Model.Id)
+@* Chamada para o modal de finalizar o contrato *@
+@await Html.PartialAsync("_FinishContractModal", Model.Id)
 
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>

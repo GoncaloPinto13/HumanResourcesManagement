@@ -151,24 +151,48 @@ namespace HumanResources.Controllers
             return View(contract);
         }
 
+
+
         // POST: Contracts/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        // POST: Contracts/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,ServiceDescription,StartDate,ExpirationDate,Value,TermsAndConditions,ClientId,ProjectId")] Contract contract)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,ServiceDescription,StartDate,ExpirationDate,Value,TermsAndConditions,ProjectId")] Contract contract)
         {
             if (id != contract.Id)
             {
                 return NotFound();
             }
-
+           
+            ModelState.Remove("Project");
             if (ModelState.IsValid)
             {
                 try
                 {
-                    _context.Update(contract);
+                    // Busca o contrato existente na base de dados
+                    var existingContract = await _context.Contracts.FindAsync(id);
+
+                    if (existingContract == null)
+                    {
+                        return NotFound();
+                    }
+
+                    // Atualiza APENAS os campos que o utilizador pode editar
+                    existingContract.ServiceDescription = contract.ServiceDescription;
+                    existingContract.StartDate = contract.StartDate;
+                    existingContract.ExpirationDate = contract.ExpirationDate;
+                    existingContract.Value = contract.Value;
+                    existingContract.TermsAndConditions = contract.TermsAndConditions;
+                    existingContract.ProjectId = contract.ProjectId;
+                    
+                    
+
+                    _context.Update(existingContract);
                     await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
+                    // return RedirectToAction(nameof(ManageContracts), new { id = contract.Id });
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -181,12 +205,18 @@ namespace HumanResources.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
             }
-           // ViewData["ClientId"] = new SelectList(_context.Clients, "Id", "CompanyName", contract.ClientId);
+
+            // Se a validação falhar, carrega novamente a lista de projetos
             ViewData["ProjectId"] = new SelectList(_context.Projects, "Id", "ProjectName", contract.ProjectId);
             return View(contract);
         }
+
+        private bool ContractExists(int id)
+        {
+            return _context.Contracts.Any(e => e.Id == id);
+        }
+     
 
         // GET: Contracts/Delete/5
         public async Task<IActionResult> Delete(int? id)
@@ -212,34 +242,8 @@ namespace HumanResources.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var contract = await _context.Contracts.FindAsync(id);
-            if (contract != null)
-            {
-                _context.Contracts.Remove(contract);
-            }
-
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
-
-        private bool ContractExists(int id)
-        {
-            return _context.Contracts.Any(e => e.Id == id);
-        }
-
-        // GET: Contracts/ManageContracts/id
-        public async Task<IActionResult> ManageContracts(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            // ATUALIZE ESTA CONSULTA
             var contract = await _context.Contracts
-                .Include(c => c.Project.Client)
-                .Include(c => c.EmployeeContracts)  // <-- INCLUIR a tabela de junção
-                    .ThenInclude(ec => ec.Employee) // <-- E DEPOIS INCLUIR o funcionário a partir da junção
+                .Include(c => c.EmployeeContracts) // Inclui os contratos de funcionários
                 .FirstOrDefaultAsync(m => m.Id == id);
 
             if (contract == null)
@@ -247,48 +251,130 @@ namespace HumanResources.Controllers
                 return NotFound();
             }
 
+            // 1. Remover todos os funcionários associados a este contrato
+            if (contract.EmployeeContracts != null)
+            {
+                _context.EmployeeContracts.RemoveRange(contract.EmployeeContracts);
+            }
+
+            // 2. Remover o contrato
+            _context.Contracts.Remove(contract);
+
+            // 3. Salvar as alterações
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
+        }
+      
+
+        public async Task<IActionResult> ManageContracts(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var contract = await _context.Contracts
+                .Include(c => c.Project.Client)
+                .Include(c => c.EmployeeContracts)
+                    .ThenInclude(ec => ec.Employee)
+                .FirstOrDefaultAsync(m => m.Id == id);
+
+            if (contract == null)
+            {
+                return NotFound();
+            }
+
+            
+            var employees = await _context.Employees
+                .Include(e => e.EmployeeContracts)
+                    .ThenInclude(ec => ec.Contract) // Esta é a linha que faltava
+                .OrderBy(e => e.Name)
+                .ToListAsync();
+
+            // Filtra a lista já em memória para obter apenas os funcionários disponíveis
+            var availableEmployees = employees
+                .Where(e => e.IsAvailable);
+
+            // Cria o SelectList a partir da lista filtrada
+            ViewBag.EmployeeId = new SelectList(availableEmployees, "Id", "Name");
+            // ----------------------
+
             return View(contract);
         }
 
-        // GET: Contracts/InitServices/5
+       
+        // GET: Contracts/StartService/5
         public async Task<IActionResult> InitServices(int? id)
         {
             if (id == null) return NotFound();
             var contract = await _context.Contracts.FindAsync(id);
             if (contract == null) return NotFound();
-            // Lógica para iniciar serviços (exemplo: alterar status, registrar log, etc.)
-            // contract.Status = ContractStatus.Iniciado; // se existir
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(ManageContracts), new { id });
+            return View(contract);
         }
 
-        // GET: Contracts/PauseServices/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> InitServices(int id, DateTime realStartDate)
+        {
+            var contract = await _context.Contracts.FindAsync(id);
+            if (contract == null) return NotFound();
+
+            contract.StartDate = realStartDate;
+            contract.Status = ContractStatus.InProgress;
+
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
+         //   return RedirectToAction(nameof(ManageContracts), new { id });
+        }
+
+        // GET: Contracts/Standby/5
         public async Task<IActionResult> PauseServices(int? id)
         {
             if (id == null) return NotFound();
             var contract = await _context.Contracts.FindAsync(id);
             if (contract == null) return NotFound();
-            // Lógica para pausar serviços
+            return View(contract);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> PauseServices(int id, bool isOnStandby)
+        {
+            var contract = await _context.Contracts.FindAsync(id);
+            if (contract == null) return NotFound();
+            // Atualiza o estado do contrato com base no valor de isOnStandby
+            if (isOnStandby)
+            {
+                contract.Status = ContractStatus.OnHold;
+            }
+            else
+            {
+                contract.Status = ContractStatus.InProgress;
+            }
+
+            contract.IsOnStandby = isOnStandby;
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(ManageContracts), new { id });
+            return RedirectToAction(nameof(Index));
+           // return RedirectToAction(nameof(ManageContracts), new { id });
         }
 
         // POST: Contracts/FinishContract/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> FinishContract(int id, DateTime realStartDate, DateTime realEndDate, decimal realValue)
+        public async Task<IActionResult> FinishContract(int id,  DateTime realEndDate, decimal realValue)
         {
             var contract = await _context.Contracts.FindAsync(id);
             if (contract == null) return NotFound();
 
-            // Atualize os campos reais do contrato
-            contract.StartDate = realStartDate;
+         // Atualiza os campos reais do contrato
+            
             contract.ExpirationDate = realEndDate;
             contract.Value = realValue;
-            // contract.Status = ContractStatus.Finalizado; // se existir
+            contract.Status = ContractStatus.Completed;
 
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(ManageContracts), new { id });
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: Contracts/AddEmployeeContract/5
@@ -316,19 +402,43 @@ namespace HumanResources.Controllers
         // POST: Contracts/AddEmployeeContract
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AddEmployeeContract(int contractId, int employeeId, DateTime startDate)
+        public async Task<IActionResult> AddEmployeeContract(int contractId, int employeeId, DateTime startDate, DateTime endDate)
         {
+            // Validação: verifica se o contrato existe
+            if (!_context.Contracts.Any(c => c.Id == contractId))
+            {
+                ModelState.AddModelError("", "Contrato inválido selecionado.");
+                // Redireciona de volta para a tela de gerenciamento do contrato
+                return RedirectToAction(nameof(ManageContracts), new { id = contractId });
+            }
+
+            // Calcula a duração em dias
+            var durationInDays = (int)(endDate - startDate).TotalDays;
+
             var employeeContract = new EmployeeContract
             {
                 ContractId = contractId,
                 EmployeeId = employeeId,
                 StartDate = startDate,
-                DurationInDays = 0 // ou calcule conforme necessário
+                DurationInDays = durationInDays
             };
 
             _context.EmployeeContracts.Add(employeeContract);
             await _context.SaveChangesAsync();
 
+            return RedirectToAction(nameof(ManageContracts), new { id = contractId });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> RemoveEmployeeContract(int employeeContractId, int contractId)
+        {
+            var employeeContract = await _context.EmployeeContracts.FindAsync(employeeContractId);
+            if (employeeContract != null)
+            {
+                _context.EmployeeContracts.Remove(employeeContract);
+                await _context.SaveChangesAsync();
+            }
             return RedirectToAction(nameof(ManageContracts), new { id = contractId });
         }
     }
