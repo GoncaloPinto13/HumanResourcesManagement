@@ -4,50 +4,56 @@
     ViewData["Title"] = "Criar Novo Funcionário";
 }
 
-<h1>@ViewData["Title"]</h1>
-<hr />
-<div class="row">
-    <div class="col-md-6">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-7">
 
-            <h4>Dados do Funcionário</h4>
-            <div class="form-group mb-3">
-                <label asp-for="Name" class="control-label"></label>
-                <input asp-for="Name" class="form-control" />
-                <span asp-validation-for="Name" class="text-danger"></span>
+        <div class="card shadow-sm">
+            <div class="card-header">
+                <h3>@ViewData["Title"]</h3>
             </div>
-            <div class="form-group mb-3">
-                <label asp-for="Position" class="control-label"></label>
-                <input asp-for="Position" class="form-control" />
-                <span asp-validation-for="Position" class="text-danger"></span>
-            </div>
+            <div class="card-body">
+                <form asp-action="Create">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-            <hr />
-            <h4>Dados da Conta de Login e Perfil</h4>
-            <div class="form-group mb-3">
-                <label asp-for="Email" class="control-label"></label>
-                <input asp-for="Email" class="form-control" />
-                <span asp-validation-for="Email" class="text-danger"></span>
-            </div>
-            <div class="form-group mb-3">
-                <label asp-for="Password" class="control-label"></label>
-                <input asp-for="Password" class="form-control" />
-                <span asp-validation-for="Password" class="text-danger"></span>
-            </div>
-            <div class="form-group mb-3">
-                <label asp-for="Role" class="control-label"></label>
-                <select asp-for="Role" class="form-control" asp-items="@Model.RoleList">
-                    <option disabled selected>-- Selecione um Perfil --</option>
-                </select>
-                <span asp-validation-for="Role" class="text-danger"></span>
-            </div>
+                    <h4>Dados do Funcionário</h4>
+                    <div class="form-group mb-3">
+                        <label asp-for="Name" class="control-label"></label>
+                        <input asp-for="Name" class="form-control" />
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label asp-for="Position" class="control-label"></label>
+                        <input asp-for="Position" class="form-control" />
+                        <span asp-validation-for="Position" class="text-danger"></span>
+                    </div>
 
-            <div class="form-group mt-4">
-                <input type="submit" value="Criar Funcionário" class="btn btn-primary" />
-                <a asp-action="Index" class="btn btn-secondary">Voltar à Lista</a>
+                    <hr />
+                    <h4>Dados da Conta de Login e Perfil</h4>
+                    <div class="form-group mb-3">
+                        <label asp-for="Email" class="control-label"></label>
+                        <input asp-for="Email" class="form-control" />
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label asp-for="Password" class="control-label"></label>
+                        <input asp-for="Password" class="form-control" />
+                        <span asp-validation-for="Password" class="text-danger"></span>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label asp-for="Role" class="control-label"></label>
+                        <select asp-for="Role" class="form-control" asp-items="@Model.RoleList">
+                            <option disabled selected>-- Selecione um Perfil --</option>
+                        </select>
+                        <span asp-validation-for="Role" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group mt-4">
+                        <input type="submit" value="Criar Funcionário" class="btn btn-primary" />
+                        <a asp-action="Index" class="btn btn-secondary">Voltar à Lista</a>
+                    </div>
+                </form>
             </div>
-        </form>
+        </div>
     </div>
 </div>
 

@@ -17,14 +17,14 @@
 
                     @* Nome do Projeto *@
                     <div class="mb-3">
-                        <label asp-for="ProjectName" class="form-label"></label>
+                        <label asp-for="ProjectName" class="form-label">Nome do projeto</label>
                         <input asp-for="ProjectName" class="form-control" />
                         <span asp-validation-for="ProjectName" class="text-danger"></span>
                     </div>
 
                     @* Descrição do Projeto *@
                     <div class="mb-3">
-                        <label asp-for="Description" class="form-label"></label>
+                        <label asp-for="Description" class="form-label">Descrição</label>
                         <textarea asp-for="Description" class="form-control" rows="4"></textarea>
                         <span asp-validation-for="Description" class="text-danger"></span>
                     </div>
@@ -32,13 +32,13 @@
                     @* Datas em duas colunas *@
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label asp-for="StartDate" class="form-label"></label>
+                            <label asp-for="StartDate" class="form-label">Data de início</label>
                             @* PASSO 1: Adicionar um ID ao campo de data de início *@
                             <input asp-for="StartDate" id="startDate" class="form-control" type="date" />
                             <span asp-validation-for="StartDate" class="text-danger"></span>
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label asp-for="DueDate" class="form-label"></label>
+                            <label asp-for="DueDate" class="form-label">Data de fim</label>
                             @* PASSO 1: Adicionar um ID ao campo de data de fim *@
                             <input asp-for="DueDate" id="dueDate" class="form-control" type="date" />
                             <span asp-validation-for="DueDate" class="text-danger"></span>
@@ -48,12 +48,12 @@
                     @* Orçamento e Cliente *@
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label asp-for="Budget" class="form-label"></label>
+                            <label asp-for="Budget" class="form-label">Orçamento</label>
                             <input asp-for="Budget" class="form-control" />
                             <span asp-validation-for="Budget" class="text-danger"></span>
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label asp-for="ClientId" class="form-label"></label>
+                            <label asp-for="ClientId" class="form-label">ID Cliente</label>
                             <select asp-for="ClientId" class="form-select" asp-items="ViewBag.ClientId">
                                 <option value="">-- Selecione um Cliente --</option>
                             </select>
