@@ -26,8 +26,13 @@
         <thead class="table-dark">
             <tr>
                 <th>@Html.DisplayNameFor(model => model.ProjectName)</th>
+                <th>@Html.DisplayNameFor(model => model.Cliente)</th>
                 <th>@Html.DisplayNameFor(model => model.Orcamento)</th>
                 <th>@Html.DisplayNameFor(model => model.CustoReal)</th>
+                <th>@Html.DisplayNameFor(model => model.TempoTotalPrevisto)</th>
+                <th>@Html.DisplayNameFor(model => model.TempoTotalDespendido)</th>
+                <th>@Html.DisplayNameFor(model => model.TotalFuncionarios)</th>
+                <th>@Html.DisplayNameFor(model => model.Status)</th>
                 <th>@Html.DisplayNameFor(model => model.Desvio)</th>
                 @* COLUNAS NOVAS/ATUALIZADAS *@
                 <th style="min-width: 150px;">@Html.DisplayNameFor(model => model.PercentagemCusto)</th>
@@ -37,12 +42,17 @@
         <tbody>
             @if (Model.Any())
             {
-                @foreach (var item in Model)
-                {
+                @foreach (var item in Model){
+                
                     <tr>
                         <td>@Html.DisplayFor(modelItem => item.ProjectName)</td>
+                        <td>@Html.DisplayFor(modelItem => item.Cliente)</td>
                         <td>@Html.DisplayFor(modelItem => item.Orcamento)</td>
                         <td>@Html.DisplayFor(modelItem => item.CustoReal)</td>
+						<td>@Html.DisplayFor(modelItem => item.TempoTotalPrevisto)</td>
+						<td>@Html.DisplayFor(modelItem => item.TempoTotalDespendido)</td>
+						<td>@Html.DisplayFor(modelItem => item.TotalFuncionarios)</td>
+						<td>@Html.DisplayFor(modelItem => item.Status)</td>
                         <td>
                             @{
                                 var desvioClass = item.Desvio > 0 ? "text-danger" : "text-success";
