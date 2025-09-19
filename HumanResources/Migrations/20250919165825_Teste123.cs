@@ -6,7 +6,11 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace HumanResources.Migrations
 {
     /// <inheritdoc />
+<<<<<<<< HEAD:HumanResources/Migrations/20250919165825_Teste123.cs
+    public partial class Teste123 : Migration
+========
     public partial class teste123 : Migration
+>>>>>>>> 21969782d42aef2ea33c4a573ad69494cbc29e1e:HumanResources/Migrations/20250919162836_teste123.cs
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
