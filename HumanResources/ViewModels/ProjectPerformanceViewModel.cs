@@ -7,8 +7,8 @@ namespace HumanResources.ViewModels
         public int ProjectId { get; set; }
 
         [Display(Name = "Nome do Projeto")]
-        public string ProjectName { get; set; } = default!; // Adicione '= default!'
-                                                            // ...
+        public string ProjectName { get; set; }
+
         [Display(Name = "Orçamento (€)")]
         [DisplayFormat(DataFormatString = "{0:C}")]
         public decimal Orcamento { get; set; }
@@ -26,5 +26,12 @@ namespace HumanResources.ViewModels
 
         [Display(Name = "Tempo Despendido (dias)")]
         public int TempoDespendido { get; set; }
+
+        // --- PROPRIEDADES ADICIONADAS PARA AS BARRAS DE PROGRESSO ---
+        [Display(Name = "% Orçamento Usado")]
+        public int PercentagemCusto => Orcamento > 0 ? (int)((CustoReal / Orcamento) * 100) : 0;
+
+        [Display(Name = "% Tempo Decorrido")]
+        public int PercentagemTempo => TempoTotalPrevisto > 0 ? (int)(((double)TempoDespendido / TempoTotalPrevisto) * 100) : 0;
     }
 }
