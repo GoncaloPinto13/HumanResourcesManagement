@@ -9,7 +9,7 @@
     <div class="col-md-7">
         <div class="card shadow-sm">
             <div class="card-header">
-                <h3>Contract Details 📄</h3>
+                <h3>Detalhes do contrato 📄</h3>
             </div>
             <div class="card-body">
                 <dl class="row">
@@ -45,7 +45,7 @@
     <div class="col-md-5">
         <div class="card shadow-sm">
             <div class="card-header">
-                <h3>Assigned Employees 🧑‍💻</h3>
+                <h3>Funcionários designados 🧑‍💻</h3>
             </div>
             <div class="card-body">
                 @if (Model.EmployeeContracts != null && Model.EmployeeContracts.Any())
@@ -73,6 +73,6 @@
 </div>
 
 <div class="mt-4">
-    <a asp-action="Edit" asp-route-id="@Model?.Id" class="btn btn-primary">Edit</a>
-    <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+    <a asp-action="Edit" asp-route-id="@Model?.Id" class="btn btn-primary">Editar</a>
+    <a asp-action="Index" class="btn btn-secondary">Voltar à lista</a>
 </div>

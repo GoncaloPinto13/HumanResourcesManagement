@@ -4,14 +4,14 @@
     ViewData["Title"] = "Edit";
 }
 
-<h1>Edit</h1>
+<h1>Editar projeto</h1>
 
-<h4>Project</h4>
+
 <hr />
 <div class="row">
     <div class="col-md-4">
         <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div asp-validation-summary="ModelOnly" class="text-danger">Nome do projeto</div>
             <input type="hidden" asp-for="Id" />
             <div class="form-group">
                 <label asp-for="ProjectName" class="control-label"></label>
@@ -19,44 +19,44 @@
                 <span asp-validation-for="ProjectName" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Description" class="control-label"></label>
+                <label asp-for="Description" class="control-label">Descrição</label>
                 <input asp-for="Description" class="form-control" />
                 <span asp-validation-for="Description" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="StartDate" class="control-label"></label>
+                <label asp-for="StartDate" class="control-label">Data de início</label>
                 <input asp-for="StartDate" class="form-control" />
                 <span asp-validation-for="StartDate" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="DueDate" class="control-label"></label>
+                <label asp-for="DueDate" class="control-label">Data de fim</label>
                 <input asp-for="DueDate" class="form-control" />
                 <span asp-validation-for="DueDate" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Budget" class="control-label"></label>
+                <label asp-for="Budget" class="control-label">Orçamento</label>
                 <input asp-for="Budget" class="form-control" />
                 <span asp-validation-for="Budget" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="ClientId" class="control-label"></label>
+                <label asp-for="ClientId" class="control-label">ID do cliente</label>
                 <select asp-for="ClientId" class="form-control" asp-items="ViewBag.ClientId"></select>
                 <span asp-validation-for="ClientId" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="ProjectStatus" class="control-label"></label>
+                <label asp-for="ProjectStatus" class="control-label">Status do projeto</label>
                 <input asp-for="ProjectStatus" class="form-control" />
                 <span asp-validation-for="ProjectStatus" class="text-danger"></span>
+                <br />
                 <div class="form-group">
-                    <input type="submit" value="Save" class="btn btn-primary" />
+                    <input type="submit" value="Salvar" class="btn btn-primary" />
+                    <a asp-action="Index" class="btn btn-secondary">Voltar à lista</a>
                 </div>
         </form>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+
 
 @section Scripts {
     @{
