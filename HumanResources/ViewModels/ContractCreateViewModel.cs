@@ -10,7 +10,9 @@ namespace HumanResources.ViewModels
     {
         public Contract Contract { get; set; }
 
-        [Required(ErrorMessage = "You must select at least one employee.")]
+
+
+        [Required(ErrorMessage = "Precisa selecionar pelo menos um funcionário.")]
         [Display(Name = "Available Employees")]
         public List<int> SelectedEmployeeIds { get; set; } = new List<int>();
 

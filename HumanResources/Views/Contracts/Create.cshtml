@@ -9,7 +9,7 @@
 
         <div class="card shadow-sm">
             <div class="card-header">
-                <h3>Create New Contract 📄</h3>
+                <h3>Criar novo Contrato 📄</h3>
             </div>
             <div class="card-body">
                 <form asp-action="Create">
@@ -17,20 +17,20 @@
 
                     @* Descrição do Serviço *@
                     <div class="mb-3">
-                        <label asp-for="Contract.ServiceDescription" class="form-label"></label>
+                        <label asp-for="Contract.ServiceDescription" class="form-label">Descrição do serviço</label>
                         <textarea asp-for="Contract.ServiceDescription" class="form-control" rows="3"></textarea>
                         <span asp-validation-for="Contract.ServiceDescription" class="text-danger"></span>
                     </div>
 
-                    @* Datas em duas colunas *@
+                    @* Datas em duas colunas *@ 
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label asp-for="Contract.StartDate" class="form-label"></label>
+                            <label asp-for="Contract.StartDate" class="form-label">Data de início</label>
                             <input asp-for="Contract.StartDate" class="form-control" type="date" />
                             <span asp-validation-for="Contract.StartDate" class="text-danger"></span>
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label asp-for="Contract.ExpirationDate" class="form-label"></label>
+                            <label asp-for="Contract.ExpirationDate" class="form-label">Data de fim</label>
                             <input asp-for="Contract.ExpirationDate" class="form-control" type="date" />
                             <span asp-validation-for="Contract.ExpirationDate" class="text-danger"></span>
                         </div>
@@ -39,21 +39,21 @@
                     @* Valor e Projeto *@
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label asp-for="Contract.Value" class="form-label"></label>
+                            <label asp-for="Contract.Value" class="form-label">Valor</label>
                             <input asp-for="Contract.Value" class="form-control" />
                             <span asp-validation-for="Contract.Value" class="text-danger"></span>
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label asp-for="Contract.ProjectId" class="form-label"></label>
+                            <label asp-for="Contract.ProjectId" class="form-label">ID do Projeto</label>
                             <select asp-for="Contract.ProjectId" class="form-select" asp-items="ViewBag.ProjectId">
-                                <option value="">-- Select a Project --</option>
+                                <option value="">-- Selecione o projeto --</option>
                             </select>
                         </div>
                     </div>
 
                     @* SELEÇÃO DE FUNCIONÁRIOS MELHORADA *@
                     <div class="mb-3">
-                        <label asp-for="SelectedEmployeeIds" class="form-label"></label>
+                        <label asp-for="SelectedEmployeeIds" class="form-label">Funcionários Disponíveis</label>
                         @* Damos um ID para o JavaScript poder encontrá-lo *@
                         <select id="employee-select" asp-for="SelectedEmployeeIds" class="form-control" asp-items="@Model.AvailableEmployees" multiple="multiple"></select>
                         <span asp-validation-for="SelectedEmployeeIds" class="text-danger"></span>
@@ -63,7 +63,7 @@
                     @* Termos e Condições *@
                     <div class="mb-3 form-check">
                         <input class="form-check-input" type="checkbox" asp-for="Contract.TermsAndConditions" />
-                        <label class="form-check-label" asp-for="Contract.TermsAndConditions"></label>
+                        <label class="form-check-label" asp-for="Contract.TermsAndConditions">Termos e Condições</label>
                         <span asp-validation-for="Contract.TermsAndConditions" class="text-danger"></span>
                     </div>
 
@@ -71,8 +71,8 @@
 
                     @* Botões de Ação *@
                     <div class="d-flex justify-content-end">
-                        <a asp-action="Index" class="btn btn-secondary me-2">Back to List</a>
-                        <input type="submit" value="Create Contract" class="btn btn-primary" />
+                        <a asp-action="Index" class="btn btn-secondary me-2">Voltar à lista</a>
+                        <input type="submit" value="Criar contrato" class="btn btn-primary" />
                     </div>
                 </form>
             </div>

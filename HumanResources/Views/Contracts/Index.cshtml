@@ -7,78 +7,82 @@
 <h1>Lista de Contratos</h1>
 
 <p>
-    <a asp-action="Create" class="btn btn-success">Novo Contrato</a>
+    <a asp-action="Create" class="btn btn-primary">Novo Contrato</a>
 </p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                Descrição do Serviço
-            </th>
-            <th>
-                Data Início
-            </th>
-            <th>
-                Data Fim
-            </th>
-@*             <th>
-                @Html.DisplayNameFor(model => model.Value)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.TermsAndConditions)
-            </th> *@
-            
-            <th>
-                Projeto Associado
-            </th>
-            <th>
-                Valor
-            </th>
-            <th>
-                Status
-            </th>
-            <th>
-                Standby
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.ServiceDescription)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.StartDate)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.ExpirationDate)
-                </td>
-@*                 <td>
-                    @Html.DisplayFor(modelItem => item.Value)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.TermsAndConditions)
-                </td>
-                 *@
-                <td>
-                    @Html.DisplayFor(modelItem => item.Project.ProjectName)
-                </td>
-                <td>@item.Value.ToString("C")</td>
-                <td>@item.Status</td>
-                <td>
-                    @(item.IsOnStandby ? "Em Standby" : "Não")
-                </td>
-                <td>
-@*                     <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> | *@
-                    <a asp-action="ManageContracts" class="btn btn-primary" asp-route-id="@item.Id">Gerir</a>
-                    @* <a asp-action="Delete" asp-route-id="@item.Id">Delete</a> *@
-                </td>
-            </tr>
-        }
-    </tbody>
-</table></table>
 
+<div class="card shadow-sm">
+    <div class="card-body">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>
+                        Descrição do Serviço
+                    </th>
+                    <th>
+                        Data Início
+                    </th>
+                    <th>
+                        Data Fim
+                    </th>
+        @*             <th>
+                        @Html.DisplayNameFor(model => model.Value)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.TermsAndConditions)
+                    </th> *@
+            
+                    <th>
+                        Projeto Associado
+                    </th>
+                    <th>
+                        Valor
+                    </th>
+                    <th>
+                        Status
+                    </th>
+                    <th>
+                        Standby
+                    </th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.ServiceDescription)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.StartDate)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.ExpirationDate)
+                        </td>
+        @*                 <td>
+                            @Html.DisplayFor(modelItem => item.Value)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.TermsAndConditions)
+                        </td>
+                         *@
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Project.ProjectName)
+                        </td>
+                        <td>@item.Value.ToString("C")</td>
+                        <td>@item.Status</td>
+                        <td>
+                            @(item.IsOnStandby ? "Em Standby" : "Não")
+                        </td>
+                        <td>
+            @*                     <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                            <a asp-action="Details" asp-route-id="@item.Id">Details</a> | *@
+                            <a asp-action="ManageContracts" class="btn btn-primary" asp-route-id="@item.Id">Gerir</a>
+                            @* <a asp-action="Delete" asp-route-id="@item.Id">Delete</a> *@
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </></table>
+    </div>
+</div>
