@@ -1,65 +1,86 @@
 ﻿@model IEnumerable<HumanResources.Models.Project>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Lista de Projetos";
 }
 
-<h1>Index</h1>
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1><i class="bi bi-briefcase-fill"></i> Lista de Projetos</h1>
+    <a asp-action="Create" class="btn btn-success">
+        <i class="bi bi-plus-circle-fill"></i> Novo Projeto
+    </a>
+</div>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.ProjectName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Description)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.StartDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.DueDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Budget)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Client)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.ProjectName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Description)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.StartDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.DueDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Budget)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Client.CompanyName)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+<div class="card shadow-sm">
+    <div class="card-body">
+        <table class="table table-hover">
+            <thead class="table-light">
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.First().ProjectName)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.First().Client)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.First().DueDate)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.First().Budget)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.First().ProjectStatus)
+                    </th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.ProjectName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Client.CompanyName)
+                        </td>
+                        <td>
+                            @item.DueDate.ToShortDateString()
+                        </td>
+                        <td>
+                            @item.Budget.ToString("C")
+                        </td>
+                        <td>
+                            @* Lógica para mostrar um "badge" com cor diferente para cada estado *@
+                            @{
+                                string statusClass = "bg-secondary"; // Cor Padrão
+                                switch (item.ProjectStatus)
+                                {
+                                    case HumanResources.Models.ProjectStatus.NotStarted:
+                                        statusClass = "bg-info text-dark";
+                                        break;
+                                    case HumanResources.Models.ProjectStatus.InProgress:
+                                        statusClass = "bg-primary";
+                                        break;
+                                    case HumanResources.Models.ProjectStatus.Completed:
+                                        statusClass = "bg-success";
+                                        break;
+                                    case HumanResources.Models.ProjectStatus.OnHold:
+                                        statusClass = "bg-warning text-dark";
+                                        break;
+                                    case HumanResources.Models.ProjectStatus.Cancelled:
+                                        statusClass = "bg-danger";
+                                        break;
+                                }
+                            }
+                            <span class="badge @statusClass">@Html.DisplayFor(modelItem => item.ProjectStatus)</span>
+                        </td>
+                        <td class="text-end">
+                            <a asp-action="ManageProjects" class="btn btn-primary" asp-route-id="@item.Id">Gerir</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
