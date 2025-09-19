@@ -1,13 +1,14 @@
 ﻿// --- INÍCIO DAS IMPORTAÇÕES (USINGS) ---
+using HumanResources.Data;
+using HumanResources.Models;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.CodeAnalysis.Elfie.Model.Structures;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using HumanResources.Data;
-using HumanResources.Models;
 
 namespace HumanResources.Controllers
 {
@@ -143,6 +144,45 @@ namespace HumanResources.Controllers
             return View(project);
         }
 
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateStatus(int id, ProjectStatus status)
+        {
+            var project = await _context.Projects.FindAsync(id);
+            if (project == null)
+            {
+                return NotFound();
+            }
+
+            project.ProjectStatus = status;
+            _context.Update(project);
+            await _context.SaveChangesAsync();
+
+            // Redireciona de volta para a mesma página de gestão
+            return RedirectToAction(nameof(ManageProjects), new { id = id });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CompleteProject(int id)
+        {
+            var project = await _context.Projects.FindAsync(id);
+            if (project == null)
+            {
+                return NotFound();
+            }
+
+            project.ProjectStatus = ProjectStatus.Completed;
+            _context.Update(project);
+            await _context.SaveChangesAsync();
+
+            // Redireciona de volta para a mesma página de gestão
+            return RedirectToAction(nameof(ManageProjects), new { id = id });
+        }
+
+
+
         /// <summary>
         /// Ação GET para a rota /Projects/Delete/{id}.
         /// Apresenta uma página de confirmação para apagar um projeto.
@@ -168,13 +208,35 @@ namespace HumanResources.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var project = await _context.Projects.FindAsync(id);
+            // Passo 1: Carregar o projeto e TODA a sua hierarquia de dependentes
+            // (Projetos -> Contratos -> Ligações com Funcionários)
+            var project = await _context.Projects
+                .Include(p => p.Contracts)
+                    .ThenInclude(c => c.EmployeeContracts)
+                .FirstOrDefaultAsync(p => p.Id == id);
+
             if (project != null)
             {
+                // Passo 2: Iterar sobre cada contrato para apagar as suas associações
+                foreach (var contract in project.Contracts)
+                {
+                    if (contract.EmployeeContracts.Any())
+                    {
+                        // Remove as ligações entre Contrato e Funcionários
+                        _context.EmployeeContracts.RemoveRange(contract.EmployeeContracts);
+                    }
+                }
+
+                // Passo 3: Apagar os contratos associados ao projeto.
+                if (project.Contracts.Any())
+                {
+                    _context.Contracts.RemoveRange(project.Contracts);
+                }
+
+                // Passo 4: Finalmente, apagar o projeto em si.
                 _context.Projects.Remove(project);
-                // NOTA: Como a eliminação em cascata foi restringida no DbContext,
-                // esta operação falhará se o projeto tiver contratos associados.
-                // A lógica para apagar os contratos primeiro teria de ser adicionada aqui.
+
+                // Passo 5: Guardar todas as alterações (remoções) numa única transação.
                 await _context.SaveChangesAsync();
             }
 

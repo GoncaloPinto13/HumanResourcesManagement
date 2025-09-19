@@ -23,7 +23,6 @@
                 <h3 class="mb-0">📄 Detalhes do Projeto</h3>
             </div>
             <div class="card-body">
-                @* Conteúdo adaptado da sua view de detalhes do projeto *@
                 <div class="row">
                     <div class="col-md-12 mb-3">
                         <label class="fw-bold text-muted">@Html.DisplayNameFor(model => model.Description)</label>
@@ -35,7 +34,7 @@
                     </div>
                     <div class="col-md-6 mb-3">
                         <label class="fw-bold text-muted">@Html.DisplayNameFor(model => model.ProjectStatus)</label>
-                        <p><span class="badge bg-info">@Html.DisplayFor(model => model.ProjectStatus)</span></p>
+                        <p><span class="badge bg-info fs-6">@Html.DisplayFor(model => model.ProjectStatus)</span></p>
                     </div>
                 </div>
             </div>
@@ -48,10 +47,12 @@
                     <i class="bi bi-plus-circle-fill"></i>
                 </a>
             </div>
-            <div class="card-body">
+            <div class="card-body p-0">
+                @* p-0 para a tabela ocupar todo o espaço *@
                 @if (Model.Contracts != null && Model.Contracts.Any())
                 {
-                    <table class="table table-hover">
+                    <table class="table table-hover mb-0">
+                        @* mb-0 para remover margem *@
                         <thead>
                             <tr>
                                 <th>Descrição do Serviço</th>
@@ -73,11 +74,12 @@
                                         }
                                         else
                                         {
+
                                             <span class="badge bg-secondary">Expirado</span>
                                         }
                                     </td>
                                     <td class="text-end">
-                                        <a asp-controller="Contracts" asp-action="Details" asp-route-id="@contract.Id" class="btn btn-sm btn-outline-primary">Gerir Contrato</a>
+                                        <a asp-controller="Contracts" asp-action="ManageContracts" asp-route-id="@contract.Id" class="btn btn-sm btn-outline-primary">Gerir Contrato</a>
                                     </td>
                                 </tr>
                             }
@@ -86,33 +88,47 @@
                 }
                 else
                 {
-                    <p class="text-muted">Ainda não existem contratos associados a este projeto.</p>
+                    <div class="p-3">
+                        <p class="text-muted mb-0">Ainda não existem contratos associados a este projeto.</p>
+                    </div>
                 }
             </div>
         </div>
     </div>
 
-    @* Coluna da Direita: Ações e Orçamento *@
+    @* Coluna da Direita: Ações, Orçamento e MUDANÇA DE ESTADO *@
     <div class="col-lg-4">
         <div class="card shadow-sm mb-4">
-            <div class="card-header">
-                <h3 class="mb-0">⚙️ Ações</h3>
-            </div>
+            <div class="card-header"><h3 class="mb-0">⚙️ Ações</h3></div>
             <div class="card-body">
                 <div class="d-grid gap-2">
                     <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary"><i class="bi bi-pencil-square"></i> Editar Projeto</a>
-                    <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger"><i class="bi bi-trash-fill"></i> Apagar Projeto</a>
                     <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#completeProjectModal">
                         <i class="bi bi-check-circle-fill"></i> Marcar como Concluído
                     </button>
+                    <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger"><i class="bi bi-trash-fill"></i> Apagar Projeto</a>
                 </div>
             </div>
         </div>
 
-        <div class="card shadow-sm">
-            <div class="card-header">
-                <h3 class="mb-0">💰 Orçamento</h3>
+        <div class="card shadow-sm mb-4">
+            <div class="card-header"><h3 class="mb-0">🔄 Mudar Estado</h3></div>
+            <div class="card-body">
+                <form asp-action="UpdateStatus" method="post">
+                    <input type="hidden" name="id" value="@Model.Id" />
+                    <div class="mb-3">
+                        <label for="status" class="form-label">Novo Estado do Projeto</label>
+                        <select name="status" class="form-select" asp-for="ProjectStatus" asp-items="Html.GetEnumSelectList<HumanResources.Models.ProjectStatus>()"></select>
+                    </div>
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-info">Atualizar Estado</button>
+                    </div>
+                </form>
             </div>
+        </div>
+
+        <div class="card shadow-sm">
+            <div class="card-header"><h3 class="mb-0">💰 Orçamento</h3></div>
             <div class="card-body text-center">
                 <h4 class="fw-bold text-muted">Orçamento Total</h4>
                 <p class="display-5 fw-bold text-success">@Model.Budget.ToString("C")</p>
@@ -132,4 +148,23 @@
     </div>
 </div>
 
-@* Adicione aqui os modais que forem necessários, por exemplo, um modal para "Marcar como Concluído" *@
+<div class="modal fade" id="completeProjectModal" tabindex="-1" aria-labelledby="completeProjectModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="completeProjectModalLabel">Confirmar Conclusão do Projeto</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Tem a certeza de que deseja marcar o projeto "@Model.ProjectName" como concluído? Esta ação não pode ser revertida.
+            </div>
+            <div class="modal-footer">
+                <form asp-action="CompleteProject" method="post">
+                    <input type="hidden" name="id" value="@Model.Id" />
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-success">Sim, Concluir Projeto</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
