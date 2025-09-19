@@ -1,5 +1,6 @@
 // --- INÍCIO DAS IMPORTAÇÕES (USINGS) ---
 // Importa atributos para validação e formatação de dados.
+using HumanResources.Models;
 using System.ComponentModel.DataAnnotations;
 
 // O namespace agrupa os ViewModels, separando-os dos modelos de dados do domínio.
@@ -40,8 +41,10 @@ namespace HumanResources.ViewModels
         [DisplayFormat(DataFormatString = "{0:C}")]
         public decimal Orcamento { get; set; }
 
-       
 
+        /// <summary>
+        /// O tempo, em dias, já despendido no projeto.
+        /// </summary>
         [Display(Name = "Tempo Total Despendido (dias)")]
         public int TempoTotalDespendido { get; set; }
 
@@ -49,7 +52,7 @@ namespace HumanResources.ViewModels
         public int TotalFuncionarios { get; set; }
 
         [Display(Name = "Status do Projeto")]
-        public string Status { get; set; }
+        public ProjectStatus Status { get; set; }
 
 
         /// <summary>
@@ -76,11 +79,7 @@ namespace HumanResources.ViewModels
         [Display(Name = "Tempo Previsto (dias)")]
         public int TempoTotalPrevisto { get; set; }
 
-        /// <summary>
-        /// O tempo, em dias, já despendido no projeto.
-        /// </summary>
-        [Display(Name = "Tempo Despendido (dias)")]
-        public int TempoDespendido { get; set; }
+
 
         // --- PROPRIEDADES ADICIONADAS PARA AS BARRAS DE PROGRESSO ---
 

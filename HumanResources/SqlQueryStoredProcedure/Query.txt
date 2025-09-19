@@ -1,97 +1,42 @@
-﻿-- ==========================================================================================
--- NOME:        sp_GetProjectPerformanceReport
--- AUTOR:       (Seu Nome/Equipa)
--- DATA CRIAÇÃO: (Data)
--- DESCRIÇÃO:   Calcula e retorna um relatório de performance para os projetos.
---              Agrega dados de custos e tempo, e permite a filtragem opcional
---              por ID de cliente e por nome do projeto.
--- ==========================================================================================
-
-
--- --- PASSO 1: GARANTIR IDEMPOTÊNCIA ---
--- Esta secção verifica se um objeto com o nome 'dbo.sp_GetProjectPerformanceReport' e do tipo
--- 'P' (Procedure) já existe na base de dados.
-IF OBJECT_ID('dbo.sp_GetProjectPerformanceReport', 'P') IS NOT NULL
-    -- Se a procedure já existir, ela é removida (DROP).
-    -- Isto garante que o script pode ser executado várias vezes sem erros,
-    -- substituindo sempre a versão antiga pela mais recente.
+﻿IF OBJECT_ID('dbo.sp_GetProjectPerformanceReport', 'P') IS NOT NULL
     DROP PROCEDURE dbo.sp_GetProjectPerformanceReport;
-GO -- 'GO' é um separador de lotes de comandos para o SQL Server.
+GO
 
 
--- --- PASSO 2: CRIAÇÃO DA PROCEDURE ---
+-- Passo 2: Cria a procedure de novo com a lógica mais recente.
 CREATE PROCEDURE [dbo].[sp_GetProjectPerformanceReport]
-    -- --- PARÂMETROS DE ENTRADA ---
-    -- A procedure aceita dois parâmetros opcionais para filtragem.
-    -- O valor '= NULL' define um valor padrão, tornando o parâmetro opcional.
-
-    @ClientId INT = NULL,           -- Filtra os projetos por um ID de cliente específico.
-    @SearchString NVARCHAR(150) = NULL -- Filtra projetos cujo nome contém esta string.
+    -- Parâmetros opcionais para os filtros
+    @ClientId INT = NULL,
+    @SearchString NVARCHAR(150) = NULL
 AS
 BEGIN
-    -- 'SET NOCOUNT ON;' impede que o SQL Server retorne a contagem de linhas afetadas.
-    -- É uma boa prática de performance, pois reduz o tráfego de rede.
     SET NOCOUNT ON;
 
-    -- --- LÓGICA PRINCIPAL DA CONSULTA (SELECT) ---
     SELECT
-        p.ProjectId,                                  -- ID do Projeto
-        p.ProjectName,                                -- Nome do Projeto
-        p.Budget AS Orcamento,                        -- Orçamento planeado, renomeado para "Orcamento"
-
-        -- CÁLCULO DO CUSTO REAL:
-        -- Multiplica a duração (em dias) de cada funcionário no contrato por um custo diário fixo (ex: 350.0).
-        -- SUM() agrega os custos de todos os funcionários alocados aos contratos do projeto.
-        -- ISNULL(..., 0) garante que, se um projeto não tiver funcionários (e o SUM retornar NULL), o valor será 0.
-        ISNULL(SUM(ec.DurationInDays * 350.0), 0) AS CustoReal,
-
-        -- CÁLCULO DO TEMPO PREVISTO:
-        -- DATEDIFF() calcula a diferença em dias entre a data de início e a data final previstas.
-        DATEDIFF(day, p.StartDate, p.DueDate) AS TempoTotalPrevisto,
-
-        -- CÁLCULO DO TEMPO DESPENDIDO (Lógica Condicional):
-        -- A instrução CASE funciona como um if/else.
-        CASE
-            -- Se o projeto ainda está 'InProgress'...
-            WHEN p.ProjectStatus = 1 -- Assumindo que 'InProgress' corresponde ao valor 1 do enum
-            -- ...calcula a diferença entre a data de início e a data de HOJE (GETDATE()).
-            THEN DATEDIFF(day, p.StartDate, GETDATE())
-            -- Caso contrário (se o projeto está NotStarted, Completed, etc.)...
-            ELSE DATEDIFF(day, p.StartDate, p.DueDate)
-        -- ...assume que o tempo despendido é igual ao tempo total previsto.
-        END AS TempoDespendido
-
-    -- --- FONTES DE DADOS E JUNÇÕES (JOINS) ---
+        p.ProjectId,
+        p.ProjectName,
+        cl.CompanyName AS Cliente,
+        p.Budget AS Orcamento,
+        SUM(c.Value) AS CustoReal,
+        CAST(DATEDIFF(day, p.StartDate, p.DueDate) AS INT) AS TempoTotalPrevisto,
+        CAST(SUM(ec.durationInDays) as int) AS TempoTotalDespendido,
+        CAST(COUNT(ec.EmployeeContractId) AS INT) AS TotalFuncionarios,
+        p.[Status]
     FROM
-        dbo.Projects p -- A tabela principal é a de Projetos (alias 'p').
-    -- LEFT JOIN é usado para incluir TODOS os projetos, mesmo aqueles que ainda não têm contratos.
-    -- Se fosse um INNER JOIN, projetos sem contratos seriam omitidos do relatório.
+        dbo.Projects p
     LEFT JOIN
         dbo.Contracts c ON p.ProjectId = c.ProjectId
-    -- Outro LEFT JOIN para incluir contratos que ainda não têm funcionários alocados.
     LEFT JOIN
-        dbo.EmployeeContracts ec ON c.ContractId = ec.ContractId
-
-    -- --- FILTRAGEM (WHERE) ---
+        dbo.EmployeeContracts ec ON ec.ContractId = c.ContractId
+    LEFT JOIN
+        dbo.Clients cl ON p.ClientId = cl.Id
     WHERE
-        -- Esta é uma técnica comum para lidar com parâmetros opcionais:
-        -- Se @ClientId for NULL, a condição (@ClientId IS NULL) é verdadeira, e o filtro não é aplicado.
-        -- Se @ClientId tiver um valor, a segunda parte (p.ClientId = @ClientId) é avaliada.
+        -- Lógica para aplicar os filtros apenas se forem fornecidos
         (@ClientId IS NULL OR p.ClientId = @ClientId)
         AND
-        -- Lógica idêntica para o filtro de pesquisa por nome.
-        -- O operador LIKE com '%' permite procurar por uma substring dentro do nome do projeto.
         (@SearchString IS NULL OR p.ProjectName LIKE '%' + @SearchString + '%')
-
-    -- --- AGREGAÇÃO (GROUP BY) ---
-    -- Como usamos a função de agregação SUM(), precisamos de agrupar todas as outras
-    -- colunas que não são agregadas. Isto garante que o SUM() calcula o custo para cada projeto individualmente.
     GROUP BY
-        p.ProjectId, p.ProjectName, p.Budget, p.StartDate, p.DueDate, p.ProjectStatus
-
-    -- --- ORDENAÇÃO (ORDER BY) ---
-    -- Ordena o resultado final por nome do projeto em ordem alfabética para facilitar a leitura.
+        p.ProjectId, p.ProjectName, p.Budget, p.StartDate, p.DueDate, p.Status, cl.CompanyName
     ORDER BY
         p.ProjectName;
 END
-GO
