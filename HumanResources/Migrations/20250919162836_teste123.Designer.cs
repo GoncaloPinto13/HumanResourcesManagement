@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HumanResources.Migrations
 {
     [DbContext(typeof(HumanResourcesContext))]
-    [Migration("20250919143055_teste")]
-    partial class teste
+    [Migration("20250919162836_teste123")]
+    partial class teste123
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -141,8 +141,16 @@ namespace HumanResources.Migrations
                         .HasColumnType("date")
                         .HasColumnName("ExpirationDate");
 
+                    b.Property<bool>("IsOnStandby")
+                        .HasColumnType("bit")
+                        .HasColumnName("IsOnStandby");
+
                     b.Property<int>("ProjectId")
                         .HasColumnType("int");
+
+                    b.Property<decimal>("RealValue")
+                        .HasColumnType("decimal(18, 2)")
+                        .HasColumnName("RealValue");
 
                     b.Property<string>("ServiceDescription")
                         .IsRequired()
@@ -153,6 +161,10 @@ namespace HumanResources.Migrations
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("date")
                         .HasColumnName("StartDate");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int")
+                        .HasColumnName("Status");
 
                     b.Property<string>("TermsAndConditions")
                         .IsRequired()
@@ -226,6 +238,9 @@ namespace HumanResources.Migrations
 
                     b.Property<int>("EmployeeId")
                         .HasColumnType("int");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime2");
 
                     b.HasKey("EmployeeContractId");
 
